@@ -21,6 +21,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 })
 
+.directive('focusMe', function($timeout) {
+  return {
+    link: function(scope, element, attrs) {
+      $timeout(function() {
+        element[0].focus();
+      }, 150);
+    }
+  };
+})
+
 .config(function($stateProvider, $urlRouterProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
@@ -47,6 +57,25 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
+
+  .state('tab.planner', {
+    url: '/planner',
+    views: {
+      'tab-planner': {
+        templateUrl: 'templates/tab-planner.html',
+        controller: 'PlannerCtrl'
+      }
+    }
+  })
+      .state('tab.selectstation', {
+        url: '/planner/:fromorto',
+        views: {
+          'tab-planner': {
+            templateUrl: 'templates/tab-station.html',
+            controller: 'StationCtrl'
+          }
+        }
+      })
 
   .state('tab.chats', {
       url: '/chats',
@@ -78,6 +107,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/planner');
 
 });

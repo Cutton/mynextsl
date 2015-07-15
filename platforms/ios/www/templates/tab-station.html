@@ -1,0 +1,21 @@
+<ion-view view-title="{{fromorto | uppercase}}">
+
+    <form ng-submit="search(station)">
+        <div class="bar bar-subheader item-input-inset">
+            <label class="item-input-wrapper">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" ng-model="station.name" focus-me />
+            </label>
+            <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+            <button ng-if="station.name.length" type="button"
+                    class="button button-clear ion-close-circled" ng-click="station.name = ''"></button>
+        </div>
+    </form>
+    <ion-content class="has-subheader">
+        <ion-list>
+            <ion-item ng-repeat="item in searchResults">
+                <a href="#/tab/planner" class="item item-borderless" ng-click="setStation(item)">{{item.Name}}</a>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>
