@@ -37,6 +37,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
+
+  if (!localStorage.getItem('trips')) {
+    console.log('Init trips!');
+    localStorage['trips'] = JSON.stringify("[]");
+  }
+
   $stateProvider
 
   // setup an abstract state for the tabs directive
@@ -48,15 +54,24 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   // Each tab has its own nav history stack:
 
-  .state('tab.dash', {
-    url: '/dash',
+  .state('tab.mytrips', {
+    url: '/mytrips',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
+      'tab-mytrips': {
+        templateUrl: 'templates/tab-mytrips.html',
+        controller: 'TripCtrl'
       }
     }
   })
+      .state('tab.tripdetail', {
+        url: '/mytrips/:tripIndex',
+        views: {
+          'tab-mytrips': {
+            templateUrl: 'templates/tab-tripdetails.html',
+            controller: 'TripDetailCtrl'
+          }
+        }
+      })
 
   .state('tab.planner', {
     url: '/planner',

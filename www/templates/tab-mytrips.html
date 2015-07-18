@@ -1,0 +1,20 @@
+<ion-view view-title="My Trips">
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="trip in trips" class="padding">
+        <a href="#/tab/mytrips/{{$parent.$index}}" class="item item-divider item-icon-right">
+          {{trip.ResOrigin.Name}} >> {{trip.ResDestination.Name}}
+          <i class="icon ion-chevron-right"></i>
+        </a>
+        <ion-list>
+          <ion-item ng-repeat="subtrip in trip.Subtrip">
+            {{subtrip.Origin.Name}} to {{subtrip.Destination.Name}}
+          </ion-item>
+        </ion-list>
+
+      </ion-item>
+    </ion-list>
+
+    <button ng-click="clear()">clear</button>
+  </ion-content>
+</ion-view>

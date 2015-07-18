@@ -1,9 +1,37 @@
 angular.module('starter.controllers', [])
 
-    .controller('DashCtrl', function ($scope) {
+    .controller('TripCtrl', function ($scope, Localstorage, Stations) {
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.trips = Localstorage.getObject("trips");
+        });
+
+
+        $scope.clear = function(){
+            Localstorage.setObject('trips',[]);
+        }
+
     })
 
-    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading) {
+    .controller('TripDetailCtrl', function ($scope, $stateParams, $q, Localstorage, Planner) {
+
+        var trips = Localstorage.getObject("trips");
+        $scope.trip = trips[$stateParams.tripIndex];
+
+        var requestList = [];
+        angular.forEach($scope.trip.Subtrip, function(subtrip){
+            requestList.push(Planner.getAvailableWays(subtrip.Origin.SiteId, subtrip.Destination.SiteId));
+        });
+
+        $q.all(requestList).then(function(waysList){
+            $scope.waysList = waysList;
+        });
+
+
+    })
+
+    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, Stations) {
+
 
         $scope.$on('$ionicView.beforeEnter', function(){
             $scope.fromStation = Planner.getFrom();
@@ -23,6 +51,58 @@ angular.module('starter.controllers', [])
                 });
 
         }
+
+        $scope.addTrip = function(route) {
+
+            $ionicLoading.show({
+                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+            });
+
+            if(angular.isArray(route.LegList.Leg)) {
+
+                var requestList = [];
+
+                angular.forEach(route.LegList.Leg, function(leg){
+                    if(leg.type !== "WALK") {
+                        requestList.push(Planner.getTripOnlyWithStation(leg));
+                    }
+                });
+
+                $q.all(requestList).then(function(results){
+                    var trip = {
+                        ResOrigin: results[0].Origin,
+                        ResDestination: results[results.length-1].Destination,
+                        Subtrip:[]
+                    };
+                    angular.forEach(results, function(result){
+                        trip.Subtrip.push(result);
+                    })
+                    var trips = Localstorage.getObject('trips');
+                    trips.push(trip);
+                    Localstorage.setObject('trips',trips);
+                    $ionicLoading.hide();
+                });
+
+
+            } else {
+
+                Planner.getTripOnlyWithStation(route.LegList.Leg).then(function(result){
+                    var trips = Localstorage.getObject('trips');
+                    var trip = {
+                        ResOrigin: result.Origin,
+                        ResDestination: result.Destination,
+                        Subtrip: [result]
+                    }
+                    trips.push(trip);
+                    Localstorage.setObject('trips',trips);
+                    $ionicLoading.hide();
+                });
+
+            }
+
+
+
+        }
     })
 
     .controller('StationCtrl', function ($scope, $stateParams, Stations, Planner, $ionicLoading) {
@@ -35,12 +115,12 @@ angular.module('starter.controllers', [])
                 template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
             });
 
+
             Stations.findStations(station.name)
                 .then(function(result) {
                     $scope.searchResults = result.data.ResponseData;
                     $ionicLoading.hide();
                 });
-
 
         }
 

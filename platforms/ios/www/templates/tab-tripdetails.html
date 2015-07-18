@@ -1,0 +1,16 @@
+<ion-view view-title="{{trip.ResOrigin.Name}} > {{trip.ResDestination.Name}}">
+    <ion-content>
+        <div class="list card" ng-repeat="subtrip in trip.Subtrip track by $index">
+            <div class="item item-positive">
+                {{subtrip.Origin.Name}} --> {{subtrip.Destination.Name}}
+            </div>
+            <ion-item class="item-icon-left" ng-repeat="way in waysList[$index]">
+                <i ng-if="way.type == 'METRO'" class="icon ion-android-subway"></i>
+                <i ng-if="way.type == 'BUS'" class="icon ion-android-bus"></i>
+                <i ng-if="way.type == 'WALK'" class="icon ion-android-walk"></i>
+                <i ng-if="way.type == 'TRAIN'" class="icon ion-android-train"></i>
+                <h4>{{way.type}} {{way.line}} {{way.dir}} {{way.schedule}}</h4>
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-view>
