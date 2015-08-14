@@ -10,6 +10,9 @@
                 <i ng-if="way.type == 'WALK'" class="icon ion-android-walk"></i>
                 <i ng-if="way.type == 'TRAIN'" class="icon ion-android-train"></i>
                 <h4>{{way.type}} {{way.line}} {{way.dir}} {{way.schedule}}</h4>
+                <p>
+                    <div ng-repeat="t in way.time">{{t.departure + "-" + t.arrival + " ("+t.delay+")"}}</div>
+                </p>
             </ion-item>
         </div>
     </ion-content>

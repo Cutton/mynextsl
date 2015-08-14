@@ -21,6 +21,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 })
 
+  /*
+    * Customized directive html tag for making input field be focused when page is actived.
+    * */
 .directive('focusMe', function($timeout) {
   return {
     link: function(scope, element, attrs) {
@@ -38,6 +41,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
 
+
+  /*
+  * Init localStorage with user's favorite trips.
+  * */
   if (!localStorage.getItem('trips')) {
     console.log('Init trips!');
     localStorage['trips'] = JSON.stringify("[]");

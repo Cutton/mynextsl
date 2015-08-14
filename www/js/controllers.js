@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-    .controller('TripCtrl', function ($scope, Localstorage, Stations) {
+    .controller('TripCtrl', function ($scope, Localstorage, Stations,$state) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
             $scope.trips = Localstorage.getObject("trips");
@@ -9,6 +9,7 @@ angular.module('starter.controllers', [])
 
         $scope.clear = function(){
             Localstorage.setObject('trips',[]);
+            $state.go($state.current, {}, {reload: true});
         }
 
     })

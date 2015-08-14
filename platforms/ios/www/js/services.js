@@ -50,8 +50,34 @@ angular.module('starter.services', [])
     })
 
 
-    .factory('Stations', function ($http) {
+    .factory('Stations', function ($http, $q) {
 
+
+        /*
+        * API : SL Platsuppslag (https://www.trafiklab.se/api/sl-platsuppslag/sl-platsuppslag)
+        *
+        * Params: stationQuery - search string
+        *         maxresult - number of returned matched results
+        *
+        * Return: JSON object example
+        *
+        *     {
+                 "StatusCode": 0,
+                 "Message": null,
+                 "ExecutionTime": 0,
+                 "ResponseData": [
+                     {
+                         "Name": "Kungshamra (Solna)",
+                         "SiteId": "3433",
+                         "Type": "Station",
+                         "X": "18027354",
+                         "Y": "59381940"
+                     },
+                     ......
+                 ]
+              }
+        *
+        * */
         var findStations = function (stationQuery, maxresult) {
 
             return $http.get("http://api.sl.se/api2/typeahead.json",
@@ -64,13 +90,69 @@ angular.module('starter.services', [])
                     }
                 })
                 .success(function (data) {
-                    return data.ResponseData;
+                    var s = data.ResponseData
+                    return s;
                 })
                 .error(function (data) {
                     console.log("Fail to get trip data!");
                 });
         };
 
+
+        /*
+         * API : SL Realtidsinformation 3
+         *       (https://www.trafiklab.se/api/sl-realtidsinformation-3/sl-realtidsinformation-3)
+         *
+         * Params: siteid - SL siteid
+         *         timewindow - time window for departuring time
+         *
+         * Return: JSON object example
+         *
+         *     {
+                     "StatusCode": 0,
+                     "Message": null,
+                     "ExecutionTime": 61,
+                     "ResponseData": {
+                     "LatestUpdate": "2015-07-19T08:42:45",
+                     "DataAge": 7,
+                     "Metros": [
+
+                     ],
+                     "Buses": [
+                         {
+                             "JourneyDirection": 2,
+                             "GroupOfLine": null,
+                             "StopAreaName": "Kungshamra",
+                             "StopAreaNumber": 50355,
+                             "StopPointNumber": 50355,
+                             "StopPointDesignation": null,
+                             "TimeTabledDateTime": "2015-07-19T08:55:21",
+                             "ExpectedDateTime": "2015-07-19T08:55:21",
+                             "DisplayTime": "12 min",
+                             "Deviations": null,
+                             "TransportMode": "BUS",
+                             "LineNumber": "540",
+                             "Destination": "Universitetet",
+                             "SiteId": 3433
+                         },
+                     ....
+                     ],
+                     "Trains": [
+
+                     ],
+                     "Trams": [
+
+                     ],
+                     "Ships": [
+
+                     ],
+                     "StopPointDeviations": [
+
+                     ]
+                     }
+                }
+         *
+         * */
         var getRealTimeInfo = function(siteid,timewindow){
             return $http.get("http://api.sl.se/api2/realtimedepartures.json",
                 {
@@ -86,24 +168,124 @@ angular.module('starter.services', [])
                 .error(function (data) {
                     console.log("Fail to get realtime data!");
                 });
-        };
+        }
+
+        /*
+         * API : Resrobot StationInZone (https://www.trafiklab.se/api/resrobot-sok-resa/stationsinzone)
+         *
+         * Params: SL Station Object
+         *          {
+         *              "Name" : "Kungshamra (Solna)",
+         *              "SiteId": "3433",
+         *              "Type": "Station",
+         *              "X": "18027354",
+         *              "Y": "59381940"
+         *          }
+         *
+         * Return: JSON object example
+         *
+         *          {
+         *              "Name" : "Kungshamra (Solna)",
+         *              "SiteId": "3433",
+         *              "Type": "Station",
+         *              "X": "18027354",
+         *              "Y": "59381940"
+         *              "ResrobotInfo": {
+         *                                   "@id": "7445577",
+         *                                    "@x": "18.036733",
+         *                                    "@y": "59.381854",
+         *                                    "name": "Bergshamra centrum",
+         *                                    "municipality": {
+         *                                                       "@id": "84",
+         *                                                       "@county_id": "1",
+         *                                                       "#text": "Solna"
+         *                                    },
+         *                                    "transportlist": {
+         *                                                        "transport": {
+         *                                                               "@type": "BLT",
+         *                                                               "@displaytype": "B"
+         *                                                        }
+         *                                    },
+         *                                    "producerlist": {
+         *                                                    "producer": {
+         *                                                       "@id": "275"
+         *                                                    }
+         *                                    }
+         *                               }
+         *          }
+         * */
+
+        var getLocationInfoHttp = function(slStation){
+            return $http.get("https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json",
+                {
+                    params: {
+                        "key": "eGASZLdsym9cEXpHIU8xmkvtjTasGy3t",
+                        "apiVersion": "2.1",
+                        "radius": "100",
+                        "coordSys": "WGS84",
+                        /*Format 18036733 as 18.036733*/
+                        "centerX": slStation.X.substr(0, 2) + "." + slStation.X.substr(2),
+                        "centerY": slStation.Y.substr(0, 2) + "." + slStation.Y.substr(2)
+                    }
+                })
+        }
+
+        var getLocationInfo = function(slStation){
+            return $q.all([
+                getLocationInfoHttp(slStation)
+            ]).then(
+                function(results) {
+                    console.log(results);
+                    if(angular.isArray(results[0].data.stationsinzoneresult.location)) {
+                        /*Find more than one location, select the first one*/
+                        slStation.ResrobotInfo = results[0].data.stationsinzoneresult.location[0];
+                    } else {
+                        /*Only one location matched*/
+                        slStation.ResrobotInfo = results[0].data.stationsinzoneresult.location;
+                    }
+                    return slStation;
+                }
+            );
+
+        }
 
         return {
             findStations: findStations,
-            getRealTimeInfo: getRealTimeInfo
+            getRealTimeInfo: getRealTimeInfo,
+            getLocationInfo: getLocationInfo
         };
 
     })
 
     .factory('Planner', function ($http, $q, Stations) {
 
+
+        /*
+         * API : SL Reseplanerare 2
+         *      (https://www.trafiklab.se/api/sl-reseplanerare-2/dokumentation-sl-reseplanerare-2)
+         *
+         * Params: fromId - origin station siteId
+         *         toId - destination station siteOd
+         *         Time - current time (When this parameter is not set, SL api will use current time as default
+         *                              However, it has delay and isn't accurate, which lead to the coming bus missing)
+         *
+         * Return: JSON object example
+         *          (url http://api.sl.se/api2/TravelplannerV2/trip.json?key=[keyString]&originId=3433&destId=9000)
+         *
+         *
+         *
+         * */
+
         var searchRountes = function (fromId, toId) {
+            var currentDate = new Date();
             return $http.get("http://api.sl.se/api2/TravelplannerV2/trip.json",
                 {
                     params: {
                         "key": "9d7df7c15c9c4275bc1c821f093a880c",
                         "originId": fromId,
-                        "destid": toId
+                        "destid": toId,
+                        /*DEBUG code for fixing timezone issue.*/
+                        "Time": (currentDate.getHours()-6)+":"+currentDate.getMinutes()
                     }
                 })
                 .success(function (data) {
@@ -115,14 +297,19 @@ angular.module('starter.services', [])
         }
 
         /*
-         * Search station name and get Siteid
+         * Return origin and destination stations data including SiteID according the sub-trip data
+         * because sub-trip's origin and destination don't have siteid.
          *
          * Input: sub-trip (Leg) JSON object
          * Output: trip JSON object only includes stations with SideId
          *   {
          *       Origin: {
          *           Name: xxxx,
-         *           SiteId: xxxx
+         *           SiteId: xxxx,
+         *           X: ****,
+         *           Y: ****,
+         *           Type: *****,
+         *           ResrobotInfo: {...}
          *       },
          *       Destination: {
          *           Name: xxxx,
@@ -137,14 +324,48 @@ angular.module('starter.services', [])
                 Stations.findStations(leg.Destination.name, 1)
             ]).then(
                 function (results) {
-                    var tripObject = {};
-                    tripObject.Origin = results[0].data.ResponseData[0];
-                    tripObject.Destination = results[1].data.ResponseData[0];
-                    return tripObject
+                    return $q.all([
+                        Stations.getLocationInfo(results[0].data.ResponseData[0]),
+                        Stations.getLocationInfo(results[1].data.ResponseData[0])
+                    ]).then(
+                        function(results){
+                            var tripObject = {};
+                            tripObject.Origin=results[0];
+                            tripObject.Destination=results[1];
+                            return tripObject;
+                        }
+                    );
                 }
             );
 
         }
+
+        /*
+        * Get all possbile trips like bus,metro,train, etc between two stations. It is only used for sub-trip
+        * by assuming that there is no transfer.
+        *
+        * Real time information is added, too.
+        *
+        * Params: fromId: origin siteid
+        *         toId: destination siteid
+        *
+        * Return:
+        *
+        *   [
+        *       {
+        *           type: "BUS",
+        *           line: "540",
+        *           dir: "XXXXXXX"
+        *           schedule: [
+        *               {"3 min"},
+        *               {"14:33"},
+        *               .....
+        *           ]
+        *       },
+        *       .....
+        *   ]
+        *
+        * */
 
         var getAvailableWays = function (fromId, toId) {
 
@@ -157,24 +378,27 @@ angular.module('starter.services', [])
                         type: trip.LegList.Leg.type,
                         line: trip.LegList.Leg.line,
                         dir: trip.LegList.Leg.dir,
+                        time: [{departure:trip.LegList.Leg.Origin.time,arrival:trip.LegList.Leg.Destination.time}],
                         schedule: []
                     };
 
                     if(ways.length == 0) {
                         ways.push(newway);
-                    }
+                    } else {
 
-                    var isnew = true;
-                    for(i=0;i<ways.length;i++){
-                        if(ways[i].type == newway.type &&
-                            ways[i].line == newway.line &&
-                            ways[i].dir == newway.dir) {
-                            isnew = false;
-                            break;
+                        var isnew = true;
+                        for(i=0;i<ways.length;i++){
+                            if(ways[i].type == newway.type &&
+                                ways[i].line == newway.line &&
+                                ways[i].dir == newway.dir) {
+                                ways[i].time.push({departure:newway.time[0].departure,arrival:newway.time[0].arrival});
+                                isnew = false;
+                                break;
+                            }
                         }
-                    }
-                    if(isnew) {
-                        ways.push(newway);
+                        if(isnew) {
+                            ways.push(newway);
+                        }
                     }
                 });
 
@@ -184,6 +408,11 @@ angular.module('starter.services', [])
             });
         }
 
+
+        /*
+        * Get realtime info, find matched bus,metro,etc and then add next
+        * departuring time into it.
+        * */
         var getAllWaysSchedule = function(ways,siteid){
             return Stations.getRealTimeInfo(siteid).then(function(result){
                 var realTimeInfo = result.data.ResponseData;
@@ -191,25 +420,42 @@ angular.module('starter.services', [])
                     if(way.type == "BUS"){
                         angular.forEach(realTimeInfo.Buses,function(bus){
                             if(way.line == bus.LineNumber && way.dir == bus.Destination) {
-                                way.schedule.push(bus.DisplayTime);
+                                way.schedule.push(bus.ExpectedDateTime);
                             }
                         });
                     } else if(way.type == "METRO") {
 
                         angular.forEach(realTimeInfo.Metros,function(metro){
-                            console.log(metro.LineNumber + "--" + metro.Destination+ "--" + metro.DisplayTime)
                             if(way.line == metro.LineNumber && way.dir == metro.Destination) {
                                 way.schedule.push(metro.DisplayTime);
                             }
                         });
                     } else if(way.type == "TRAIN") {
                         angular.forEach(realTimeInfo.Trains,function(train){
-                            console.log(train.LineNumber + "--" + train.Destination+ "--" + train.DisplayTime)
                             if(way.line == train.LineNumber && way.dir == train.Destination) {
-                                way.schedule.push(train.DisplayTime);
+                                way.schedule.push(train.ExpectedDateTime);
                             }
                         });
                     }
+                });
+
+                angular.forEach(ways, function(way){
+                    var loop = way.time.length < way.schedule.length? way.time.length:way.schedule.length;
+                    if(way.type == "BUS" || way.type == "TRAIN"){
+                        for(i=0; i<loop; i++){
+                            var realTime = new Date(way.schedule[i]);
+
+                            /**Debug code for fixing timezone difference**/
+                            realTime.setHours(realTime.getUTCHours());
+
+                            var scheduleTime = new Date();
+                            scheduleTime.setHours(way.time[i].departure.substr(0,2));
+                            scheduleTime.setMinutes(way.time[i].departure.substr(3,5));
+
+                            way.time[i].delay = Math.round((realTime - scheduleTime)/60000);
+                        }
+                    }
+
                 });
                 return ways;
             });
