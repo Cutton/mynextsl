@@ -284,8 +284,7 @@ angular.module('starter.services', [])
                         "key": "9d7df7c15c9c4275bc1c821f093a880c",
                         "originId": fromId,
                         "destid": toId,
-                        /*DEBUG code for fixing timezone issue.*/
-                        "Time": (currentDate.getHours()-6)+":"+currentDate.getMinutes()
+                        "Time": currentDate.getHours()+":"+currentDate.getMinutes()
                     }
                 })
                 .success(function (data) {
@@ -446,7 +445,7 @@ angular.module('starter.services', [])
                             var realTime = new Date(way.schedule[i]);
 
                             /**Debug code for fixing timezone difference**/
-                            realTime.setHours(realTime.getUTCHours());
+                            //realTime.setHours(realTime.getUTCHours());
 
                             var scheduleTime = new Date();
                             scheduleTime.setHours(way.time[i].departure.substr(0,2));
