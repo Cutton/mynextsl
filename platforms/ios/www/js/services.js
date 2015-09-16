@@ -59,13 +59,9 @@ angular.module('starter.services', [])
         * Params: stationQuery - search string
         *         maxresult - number of returned matched results
         *
-        * Return: JSON object example
+        * Return: station object array
         *
-        *     {
-                 "StatusCode": 0,
-                 "Message": null,
-                 "ExecutionTime": 0,
-                 "ResponseData": [
+        *     [
                      {
                          "Name": "Kungshamra (Solna)",
                          "SiteId": "3433",
@@ -74,11 +70,10 @@ angular.module('starter.services', [])
                          "Y": "59381940"
                      },
                      ......
-                 ]
-              }
+              ]
         *
         * */
-        var findStations = function (stationQuery, maxresult) {
+        var findStationsHttp = function (stationQuery, maxresult) {
 
             return $http.get("http://api.sl.se/api2/typeahead.json",
                 {
@@ -88,15 +83,18 @@ angular.module('starter.services', [])
                         "stationonly": "true",
                         "MaxResults": maxresult = typeof maxresult !== 'undefined' ? maxresult : 10
                     }
-                })
-                .success(function (data) {
-                    var s = data.ResponseData
-                    return s;
-                })
-                .error(function (data) {
-                    console.log("Fail to get trip data!");
                 });
+
         };
+
+        var findStations = function (stationQuery, maxresult) {
+
+            return $q.all([findStationsHttp(stationQuery, maxresult)])
+                .then(function(results){
+                    return results[0].data.ResponseData;
+                });
+
+        }
 
 
         /*
@@ -269,14 +267,14 @@ angular.module('starter.services', [])
          *         Time - current time (When this parameter is not set, SL api will use current time as default
          *                              However, it has delay and isn't accurate, which lead to the coming bus missing)
          *
-         * Return: JSON object example
+         * Return: trip object array
          *          (url http://api.sl.se/api2/TravelplannerV2/trip.json?key=[keyString]&originId=3433&destId=9000)
          *
          *
          *
          * */
 
-        var searchRountes = function (fromId, toId) {
+        var searchRountesHttp = function (fromId, toId) {
             var currentDate = new Date();
             return $http.get("http://api.sl.se/api2/TravelplannerV2/trip.json",
                 {
@@ -293,6 +291,32 @@ angular.module('starter.services', [])
                 .error(function (data) {
                     console.log("Fail to get trip data!");
                 });
+        }
+
+        var searchRountes = function (fromId, toId) {
+            return $q.all([
+                searchRountesHttp(fromId, toId)
+            ]).then(function(results){
+                return results[0].data.TripList.Trip;
+            });
+        }
+
+
+        var getTripDetailsHttp = function (tripref) {
+            return $http.get("http://api.sl.se/api2/TravelplannerV2/journeydetail.json?"+tripref,
+                {
+                    params: {
+                        "key": "9d7df7c15c9c4275bc1c821f093a880c"
+                    }
+                })
+        }
+
+        var getTripDetails = function (tripref) {
+            return $q.all([
+                getTripDetailsHttp(tripref)
+            ]).then(function(results){
+                return results[0].data.JourneyDetail.Stops.Stop;
+            });
         }
 
         /*
@@ -443,6 +467,8 @@ angular.module('starter.services', [])
                     if(way.type == "BUS" || way.type == "TRAIN"){
                         for(i=0; i<loop; i++){
                             var realTime = new Date(way.schedule[i]);
+                            //Since schedule time doesn't contain GMT info and set as UTC time, fix by -2.
+                            realTime.setHours(realTime.getHours()-2);
 
                             /**Debug code for fixing timezone difference**/
                             //realTime.setHours(realTime.getUTCHours());
@@ -471,21 +497,30 @@ angular.module('starter.services', [])
             Y: "59331133"
         };
 
+        var selectedTrip = {};
+
         return {
             searchRountes: searchRountes,
             getTripOnlyWithStation: getTripOnlyWithStation,
             getAvailableWays: getAvailableWays,
+            getTripDetails: getTripDetails,
             setFrom: function (station) {
                 fromStation = station;
             },
             setTo: function (station) {
                 toStation = station;
             },
-            getFrom: function (station) {
+            getFrom: function () {
                 return fromStation;
             },
-            getTo: function (station) {
+            getTo: function () {
                 return toStation;
+            },
+            setSelectedTrip: function(trip) {
+                selectedTrip = trip;
+            },
+            getSelectedTrip: function() {
+                return selectedTrip;
             }
         };
 

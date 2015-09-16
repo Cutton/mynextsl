@@ -13,36 +13,50 @@
                     <div class="col col-67">{{toStation.Name}}</div>
                 </div>
             </a>
-            <a class="button button-positive button-full" style="margin-bottom: 0px;" ng-click="searchRoutes()">Search</a>
+            <a class="button button-positive button-full" style="margin-bottom: 0px;" ng-click="searchRoutes()">
+                Search
+            </a>
         </div>
-        <ion-list>
-            <ion-item ng-repeat="route in routes">
-                <div class="item item-divider item-button-right">
-                    Travel time -- {{route.dur}} min
-                    <button class="button button-positive" ng-click="addTrip(route)">
-                        Add
-                    </button>
+        <div class="list list-inset">
+            <a href="#/tab/planner/trip/{{$index}}" class="item row padding"
+               ng-repeat="route in routes" ng-click="selectTrip(route);">
+                <div class="col-20 text-center">
+                    <h1>{{route.Lefttime}}</h1><strong>min</strong>
+                </div>
+                <div class="col-75">
+                    <div class="row">
+                        <div class="col-75">
+                            <h2 style="font-size:28px;">
+                                {{route.Origin.time+" - "+route.Destination.time}}
+                            </h2>
+                        </div>
+                        <div class="col-25 col-center">
+                            <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 5px;">
+                        <div style="font-size:20px;margin-right: 5px;"
+                             ng-repeat="leg in route.LegList.Leg">
+                            <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
+                                &nbsp;{{leg.line}}
+                            </i>
+                            <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
+                                &nbsp;{{leg.line}}
+                            </i>
+                            <i ng-if="leg.type == 'WALK' && leg.dist > 300" class="icon ion-android-walk">
+                                &nbsp;{{leg.dist}}
+                            </i>
+                            <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
+                                &nbsp;{{leg.line}}
+                            </i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-center">
+                    <i class="icon ion-chevron-right" style="font-size:24px;"></i>
                 </div>
 
-                <ion-item ng-if="route.LegList.Leg[0] === undefined" class="item-icon-left">
-                    <i ng-if="route.LegList.Leg.type == 'METRO'" class="icon ion-android-subway"></i>
-                    <i ng-if="route.LegList.Leg.type == 'BUS'" class="icon ion-android-bus"></i>
-                    <i ng-if="route.LegList.Leg.type == 'WALK'" class="icon ion-android-walk"></i>
-                    <i ng-if="route.LegList.Leg.type == 'TRAIN'" class="icon ion-android-train"></i>
-                    <h4>{{route.LegList.Leg.type}} {{route.LegList.Leg.line}}</h4>
-                    <p>From {{route.LegList.Leg.Origin.name}} to {{route.LegList.Leg.Destination.name}}</p>
-                </ion-item>
-
-                <ion-item ng-if="route.LegList.Leg[0]!==undefined"
-                          class="item-icon-left" ng-repeat="leg in route.LegList.Leg">
-                    <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway"></i>
-                    <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus"></i>
-                    <i ng-if="leg.type == 'WALK'" class="icon ion-android-walk"></i>
-                    <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train"></i>
-                    <h4>{{leg.type}} {{leg.line}}</h4>
-                    <p>From {{leg.Origin.name}} to {{leg.Destination.name}}</p>
-                </ion-item>
-            </ion-item>
-        </ion-list>
+            </a>
+        </div>
     </ion-content>
 </ion-view>

@@ -98,6 +98,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
           }
         }
       })
+      .state('tab.trip-info', {
+        url: '/planner/trip/:tripIndex',
+        views: {
+          'tab-planner': {
+            templateUrl: 'templates/tab-tripinfo.html',
+            controller: 'TripInfoCtrl'
+          }
+        }
+      })
 
   .state('tab.chats', {
       url: '/chats',

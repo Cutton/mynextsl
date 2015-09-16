@@ -1,0 +1,57 @@
+<ion-view view-title="Trip Detailed Info">
+    <ion-content>
+        <div class="list">
+            <div class="item list card" ng-repeat="leg in trip.LegList.Leg" style="padding: 0;">
+                <div class="item row">
+                    <div class="col-20 text-center">
+                        <h3 style="font-size: 20px;">{{leg.Origin.time}}</h3>
+                    </div>
+                    <div class="col-80 text-left">
+                        <h3 style="font-size: 20px;">{{leg.Origin.name}}</h3>
+                    </div>
+                </div>
+                <div class="item row">
+                    <div class="col-20 col-center text-center" style="font-size: 40px;">
+                        <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway padding" ></i>
+                        <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus"></i>
+                        <i ng-if="leg.type == 'WALK'" class="icon ion-android-walk"></i>
+                        <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="font-size: 20px;">{{leg.name}}</h3>
+                        <h3 style="font-size: 14px;color: darkgray;" ng-if="leg.type != 'WALK'">
+                            Towards : {{leg.dir}}
+                        </h3>
+                        <h3 style="font-size: 14px;color: darkgray;" ng-if="leg.type == 'WALK'">
+                            Distance : {{leg.dist}} meters
+                        </h3>
+                    </div>
+                    <div class="col-10 col-center">
+                        <a ng-click="tripDetailSwitch($index)"
+                                ng-if="leg.Destination.routeIdx-leg.Origin.routeIdx > 1 && leg.type != 'WALK'">
+                            <i class="ion-chevron-down" style="font-size:24px;"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="item" style="padding: 0;" ng-show="leg.showTripDetail">
+                    <div class="list">
+                        <div class="item row" ng-repeat="stop in leg.Stops"
+                             ng-if="$index > leg.Origin.routeIdx && $index < leg.Destination.routeIdx">
+                            <div class="col-20 text-center"><h3 style="font-size: 20px;">{{stop.depTime}}</h3></div>
+                            <div class="col text-left"><h3 style="font-size: 20px;color: darkgray;">{{stop.name}}</h3></div>
+                            <div class="col-10"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item row">
+                    <div class="col-20 text-center">
+                        <h3 style="font-size: 20px;">{{leg.Destination.time}}</h3>
+                    </div>
+                    <div class="col-80 text-left">
+                        <h3 style="font-size: 20px;">{{leg.Destination.name}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
