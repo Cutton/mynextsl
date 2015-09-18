@@ -1,10 +1,43 @@
 angular.module('starter.controllers', [])
 
-    .controller('TripCtrl', function ($scope, Localstorage, Stations,$state) {
+    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q,$ionicLoading) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
+
+            $ionicLoading.show({
+                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+            });
+
             $scope.trips = Localstorage.getObject("trips");
+
+            var requestList = [];
+            angular.forEach($scope.trips, function(trip){
+                requestList.push(Planner.searchRountes(trip.ResOrigin.SiteId,trip.ResDestination.SiteId));
+            });
+
+            var now = Date.now();
+            var index = 0;
+            $q.all(requestList).then(function(results){
+                angular.forEach(results,function(result){
+                    if(!angular.isArray(result[0].LegList.Leg)) {
+                        result[0].LegList.Leg = [result[0].LegList.Leg];
+                    }
+                    $scope.trips[index].nextTrip = result[0];
+                    //Calculate left time
+                    var datestring = result[0].LegList.Leg[0].Origin.date + "T" + result[0].LegList.Leg[0].Origin.time;// + "+0200"; //Add timezone
+                    var starttime = new Date(datestring);
+                    $scope.trips[index].Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
+
+                    index++;
+                });
+                $ionicLoading.hide();
+            });
         });
+
+        $scope.selectTrip = function(route){
+            Planner.setSelectedTrip(route);
+            console.log(route);
+        }
 
 
         $scope.clear = function(){
@@ -75,6 +108,22 @@ angular.module('starter.controllers', [])
 
         $scope.selectTrip = function(route){
             Planner.setSelectedTrip(route);
+        }
+
+        $scope.addFavouriteTrip = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+            });
+
+            var trips = Localstorage.getObject('trips');
+            var trip = {
+                ResOrigin: $scope.fromStation,
+                ResDestination: $scope.toStation,
+                Lefttime: "*"
+            }
+            trips.push(trip);
+            Localstorage.setObject('trips',trips);
+            $ionicLoading.hide();
         }
 
 

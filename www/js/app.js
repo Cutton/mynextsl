@@ -70,12 +70,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
-      .state('tab.tripdetail', {
+      .state('tab.trip-info1', {
         url: '/mytrips/:tripIndex',
         views: {
           'tab-mytrips': {
-            templateUrl: 'templates/tab-tripdetails.html',
-            controller: 'TripDetailCtrl'
+            templateUrl: 'templates/tab-tripinfo.html',
+            controller: 'TripInfoCtrl'
           }
         }
       })

@@ -1,19 +1,36 @@
 <ion-view view-title="My Trips">
   <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="trip in trips" class="padding">
-        <a href="#/tab/mytrips/{{$parent.$index}}" class="item item-divider item-icon-right">
-          {{trip.ResOrigin.Name}} >> {{trip.ResDestination.Name}}
-          <i class="icon ion-chevron-right"></i>
-        </a>
-        <ion-list>
-          <ion-item ng-repeat="subtrip in trip.Subtrip">
-            {{subtrip.Origin.Name}} to {{subtrip.Destination.Name}}
-          </ion-item>
-        </ion-list>
+    <div class="list list-inset">
+      <a href="#/tab/mytrips/{{$index}}"
+         ng-click="selectTrip(route.nextTrip);" class="item card row padding" ng-repeat="route in trips">
+        <div class="col-20 text-center col col-center">
+          <h1>{{route.Lefttime}}</h1><strong>min left</strong>
+        </div>
+        <div class="col-75">
+          <div class="row">
+            <div class="col">
+              <h2 style="font-size:20px;">
+                {{route.ResOrigin.Name}}
+              </h2>
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col">to</div>
+          </div>
+          <div class="row " style="margin-top: 10px;">
+            <div class="col">
+              <h2 style="font-size:20px;">
+                {{route.ResDestination.Name}}
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="col col-center">
+          <i class="icon ion-chevron-right" style="font-size:24px;"></i>
+        </div>
 
-      </ion-item>
-    </ion-list>
+      </a>
+    </div>
 
     <button ng-click="clear()">clear</button>
     <!--<p>{{trips}}</p>-->

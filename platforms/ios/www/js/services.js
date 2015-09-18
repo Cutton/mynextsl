@@ -255,7 +255,7 @@ angular.module('starter.services', [])
 
     })
 
-    .factory('Planner', function ($http, $q, Stations) {
+    .factory('Planner', function ($http, $q, Stations, Localstorage) {
 
 
         /*
@@ -486,16 +486,6 @@ angular.module('starter.services', [])
             });
         }
 
-        //var fromStation = {};
-        //var toStation = {};
-        var fromStation = {Name: "Kungshamra (Solna)", SiteId: "3433", Type: "Station", X: "18027354", Y: "59381940"};
-        var toStation = {
-            Name: "Stockholms C (Stockholm)",
-            SiteId: "9000",
-            Type: "Station",
-            X: "18057656",
-            Y: "59331133"
-        };
 
         var selectedTrip = {};
 
@@ -506,15 +496,16 @@ angular.module('starter.services', [])
             getTripDetails: getTripDetails,
             setFrom: function (station) {
                 fromStation = station;
+                Localstorage.setObject("fromStation", station);
             },
             setTo: function (station) {
-                toStation = station;
+                Localstorage.setObject("toStation", station);
             },
             getFrom: function () {
-                return fromStation;
+                return Localstorage.getObject("fromStation");
             },
             getTo: function () {
-                return toStation;
+                return Localstorage.getObject("toStation");
             },
             setSelectedTrip: function(trip) {
                 selectedTrip = trip;

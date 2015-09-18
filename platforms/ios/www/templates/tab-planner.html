@@ -1,22 +1,32 @@
 <ion-view view-title="Trip planner">
     <ion-content>
-        <div class="list list-inset">
-            <a class="item" href="#/tab/planner/From">
-                <div class="row row-no-padding">
-                    <div class="col col-33">From</div>
-                    <div class="col col-67">{{fromStation.Name}}</div>
+        <div class="row">
+            <div class="col">
+                <div class="list list-inset">
+                    <a class="item" href="#/tab/planner/From">
+                        <div class="row row-no-padding">
+                            <div class="col col-33">From</div>
+                            <div class="col col-67">{{fromStation.Name}}</div>
+                        </div>
+                    </a>
+                    <a class="item" href="#/tab/planner/To">
+                        <div class="row row-no-padding">
+                            <div class="col col-33">To</div>
+                            <div class="col col-67">{{toStation.Name}}</div>
+                        </div>
+                    </a>
+                    <a class="button button-positive button-full" style="margin-bottom: 0px;" ng-click="searchRoutes()">
+                        Search
+                    </a>
                 </div>
-            </a>
-            <a class="item" href="#/tab/planner/To">
-                <div class="row row-no-padding">
-                    <div class="col col-33">To</div>
-                    <div class="col col-67">{{toStation.Name}}</div>
-                </div>
-            </a>
-            <a class="button button-positive button-full" style="margin-bottom: 0px;" ng-click="searchRoutes()">
-                Search
-            </a>
+            </div>
+            <div class="col col-10 col-center" ng-if="routes != undefined">
+                <a ng-click="addFavouriteTrip()">
+                    <i class="icon ion-ios-star-outline" style="font-size: 24px;"></i>
+                </a>
+            </div>
         </div>
+
         <div class="list list-inset">
             <a href="#/tab/planner/trip/{{$index}}" class="item row padding"
                ng-repeat="route in routes" ng-click="selectTrip(route);">
@@ -26,7 +36,7 @@
                 <div class="col-75">
                     <div class="row">
                         <div class="col-75">
-                            <h2 style="font-size:24px;">
+                            <h2 style="font-size:20px;">
                                 {{route.Origin.time+" - "+route.Destination.time}}
                             </h2>
                         </div>

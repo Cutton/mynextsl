@@ -1,5 +1,10 @@
 <ion-view view-title="Trip Detailed Info">
-    <ion-content>
+    <div class="bar bar-subheader bar-positive">
+        <h2 class="title" style="font-size: 18px;">
+            {{trip.LegList.Leg[0].Origin.name +" -> "+ trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}
+        </h2>
+    </div>
+    <ion-content class="has-subheader">
         <div class="list list-borderless">
             <div class="item list list-borderless row-no-padding" ng-repeat="leg in trip.LegList.Leg">
                 <div class="item row item-borderless" ng-if="leg.type != 'WALK'">
@@ -7,10 +12,10 @@
                         <i class="ion-ios-circle-outline" style="font-size:24px;"></i>
                     </div>
                     <div class="col text-center">
-                        <h3 style="font-size: 20px;">{{leg.Origin.time}}</h3>
+                        <h3 style="font-size: 18px;">{{leg.Origin.time}}</h3>
                     </div>
                     <div class="col col-75 text-left">
-                        <h3 style="font-size: 20px;">{{leg.Origin.name}}</h3>
+                        <h3 style="font-size: 18px;">{{leg.Origin.name}}</h3>
                     </div>
                 </div>
                 <div class="item row item-borderless">
@@ -27,7 +32,7 @@
                     <div class="col col-75">
                         <div class="row">
                             <div class="col col-90">
-                                <h3 style="font-size: 20px;">{{leg.name}}</h3>
+                                <h3 style="font-size: 18px;">{{leg.name}}</h3>
                                 <h3 style="font-size: 14px;color: darkgray;" ng-if="leg.type != 'WALK'">
                                     Towards : {{leg.dir}}
                                 </h3>
@@ -38,7 +43,7 @@
                             <div class="col col-10 col-center">
                                 <a ng-click="tripDetailSwitch($index)"
                                    ng-if="leg.Destination.routeIdx-leg.Origin.routeIdx > 1 && leg.type != 'WALK'">
-                                    <i class="ion-chevron-down" style="font-size:24px;"></i>
+                                    <i class="ion-chevron-down" style="font-size:18px;"></i>
                                 </a>
                             </div>
                         </div>
@@ -49,10 +54,10 @@
                         <div class="item row" ng-repeat="stop in leg.Stops"
                              ng-if="$index > leg.Origin.routeIdx && $index < leg.Destination.routeIdx">
                             <div class="col col-offset-10 text-center">
-                                <h3 style="font-size: 20px;color: darkgray;">{{stop.depTime}}</h3>
+                                <h3 style="font-size: 18px;color: darkgray;">{{stop.depTime}}</h3>
                             </div>
                             <div class="col col-75 text-left">
-                                <h3 style="font-size: 20px;color: darkgray;">{{stop.name}}</h3>
+                                <h3 style="font-size: 18px;color: darkgray;">{{stop.name}}</h3>
                             </div>
                         </div>
                     </div>
@@ -62,10 +67,10 @@
                         <i class="ion-ios-circle-filled" style="font-size:24px;"></i>
                     </div>
                     <div class="col text-center">
-                        <h3 style="font-size: 20px;">{{leg.Destination.time}}</h3>
+                        <h3 style="font-size: 18px;">{{leg.Destination.time}}</h3>
                     </div>
                     <div class="col col-75 text-left">
-                        <h3 style="font-size: 20px;">{{leg.Destination.name}}</h3>
+                        <h3 style="font-size: 18px;">{{leg.Destination.name}}</h3>
                     </div>
                 </div>
             </div>
