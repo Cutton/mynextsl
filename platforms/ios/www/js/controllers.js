@@ -36,7 +36,7 @@ angular.module('starter.controllers', [])
 
         $scope.selectTrip = function(route){
             Planner.setSelectedTrip(route);
-            console.log(route);
+            $state.go('tab.trip-info1');
         }
 
 
@@ -64,13 +64,18 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, Stations, $stateParams) {
+    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, $state, Stations, $stateParams) {
 
 
-        $scope.$on('$ionicView.beforeEnter', function(){
+        $scope.$on('$ionicView.enter', function(){
             $scope.fromStation = Planner.getFrom();
             $scope.toStation = Planner.getTo();
         });
+
+
+        $scope.gotoStation = function(param) {
+            $state.go('tab.selectstation',{fromorto: param});
+        }
 
         $scope.searchRoutes = function(){
 
@@ -126,7 +131,7 @@ angular.module('starter.controllers', [])
             $ionicLoading.hide();
         }
 
-
+        /*
         $scope.addTrip = function(route) {
 
             $ionicLoading.show({
@@ -177,10 +182,10 @@ angular.module('starter.controllers', [])
 
 
 
-        }
+        }*/
     })
 
-    .controller('StationCtrl', function ($scope, $stateParams, Stations, Planner, $ionicLoading) {
+    .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading) {
 
         $scope.fromorto = $stateParams.fromorto;
 
@@ -207,6 +212,7 @@ angular.module('starter.controllers', [])
             } else {
                 console.log("Error! It is neither from or to!");
             }
+            $state.go('tab.planner');
         }
 
     })
@@ -220,30 +226,34 @@ angular.module('starter.controllers', [])
         //$scope.$on('$ionicView.enter', function(e) {
         //});
 
-        $scope.trip = Planner.getSelectedTrip();
-        if(!angular.isArray($scope.trip.LegList.Leg)) {
-            $scope.trip.LegList.Leg = [$scope.trip.LegList.Leg];
-        }
+        $scope.$on('$ionicView.enter', function(){
+            $scope.trip = Planner.getSelectedTrip();
+            if(!angular.isArray($scope.trip.LegList.Leg)) {
+                $scope.trip.LegList.Leg = [$scope.trip.LegList.Leg];
+            }
 
-        var requestList = [];
-        if(angular.isArray($scope.trip.LegList.Leg)) {
-            angular.forEach($scope.trip.LegList.Leg, function(leg){
-                if(leg.JourneyDetailRef !== undefined) {
-                    requestList.push(Planner.getTripDetails(leg.JourneyDetailRef.ref));
-                }
-            });
-
-            $q.all(requestList).then(function(results){
-                var i = 0;
+            var requestList = [];
+            if(angular.isArray($scope.trip.LegList.Leg)) {
                 angular.forEach($scope.trip.LegList.Leg, function(leg){
                     if(leg.JourneyDetailRef !== undefined) {
-                        leg.Stops = results[i];
-                        leg.showTripDetail = false;
-                        i++;
+                        requestList.push(Planner.getTripDetails(leg.JourneyDetailRef.ref));
                     }
                 });
-            });
-        }
+
+                $q.all(requestList).then(function(results){
+                    var i = 0;
+                    angular.forEach($scope.trip.LegList.Leg, function(leg){
+                        if(leg.JourneyDetailRef !== undefined) {
+                            leg.Stops = results[i];
+                            leg.showTripDetail = false;
+                            i++;
+                        }
+                    });
+                });
+            }
+        });
+
+
 
         $scope.tripDetailSwitch = function(legIndex) {
             if($scope.trip.LegList.Leg[legIndex].showTripDetail){

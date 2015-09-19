@@ -3,13 +3,13 @@
         <div class="row">
             <div class="col">
                 <div class="list list-inset">
-                    <a class="item" href="#/tab/planner/From">
+                    <a class="item" ng-click="gotoStation('From');">
                         <div class="row row-no-padding">
                             <div class="col col-33">From</div>
                             <div class="col col-67">{{fromStation.Name}}</div>
                         </div>
                     </a>
-                    <a class="item" href="#/tab/planner/To">
+                    <a class="item" ng-click="gotoStation('To');">
                         <div class="row row-no-padding">
                             <div class="col col-33">To</div>
                             <div class="col col-67">{{toStation.Name}}</div>

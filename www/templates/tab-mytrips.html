@@ -1,7 +1,7 @@
 <ion-view view-title="My Trips">
   <ion-content>
     <div class="list list-inset">
-      <a href="#/tab/mytrips/{{$index}}"
+      <a
          ng-click="selectTrip(route.nextTrip);" class="item card row padding" ng-repeat="route in trips">
         <div class="col-20 text-center col col-center">
           <h1>{{route.Lefttime}}</h1><strong>min left</strong>

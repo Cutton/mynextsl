@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="item item-borderless" style="padding: 0;" ng-show="leg.showTripDetail">
+                <div class="item item-borderless" style="padding: 0;" ng-if="leg.showTripDetail">
                     <div class="list">
                         <div class="item row" ng-repeat="stop in leg.Stops"
                              ng-if="$index > leg.Origin.routeIdx && $index < leg.Destination.routeIdx">

@@ -1,4 +1,4 @@
-<ion-view view-title="{{fromorto | uppercase}}">
+<ion-view view-title="{{fromorto | uppercase}}" cache-view="false">
 
     <form ng-submit="search(station)">
         <div class="bar bar-subheader item-input-inset">
@@ -14,7 +14,7 @@
     <ion-content class="has-subheader">
         <ion-list>
             <ion-item ng-repeat="item in searchResults">
-                <a href="#/tab/planner" class="item item-borderless" ng-click="setStation(item)">{{item.Name}}</a>
+                <a class="item item-borderless" ng-click="setStation(item)">{{item.Name}}</a>
             </ion-item>
         </ion-list>
     </ion-content>

@@ -23,7 +23,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   /*
     * Customized directive html tag for making input field be focused when page is actived.
-    * */
+    */
 .directive('focusMe', function($timeout) {
   return {
     link: function(scope, element, attrs) {
@@ -90,7 +90,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   })
       .state('tab.selectstation', {
-        url: '/planner/:fromorto',
+        url: '/planner/station/:fromorto',
         views: {
           'tab-planner': {
             templateUrl: 'templates/tab-station.html',
@@ -138,6 +138,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/planner');
+  $urlRouterProvider.otherwise('/tab/mytrips');
 
 });
