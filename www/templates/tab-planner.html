@@ -28,44 +28,44 @@
         </div>
 
         <div class="list list-inset">
-            <a href="#/tab/planner/trip/{{$index}}" class="item row padding"
+            <a href="#/tab/planner/trip/{{$index}}" class="item row-no-padding"
                ng-repeat="route in routes" ng-click="selectTrip(route);">
-                <div class="col-20 text-center">
-                    <h1>{{route.Lefttime}}</h1><strong>min left</strong>
-                </div>
-                <div class="col-75">
-                    <div class="row">
-                        <div class="col-75">
-                            <h2 style="font-size:20px;">
+                <div class="row">
+                    <div class="col-20 text-center col">
+                        <h1>{{route.Lefttime}}</h1>
+                        <h6>min later</h6>
+                    </div>
+                    <div class="col-75 col-center col">
+                        <div class="row">
+                            <div class="col col-75">
                                 {{route.Origin.time+" - "+route.Destination.time}}
-                            </h2>
+                            </div>
+                            <div class="col col-25 col-center">
+                                <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
+                            </div>
                         </div>
-                        <div class="col-25 col-center">
-                            <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
+                        <div class="row" style="margin-top: 5px;">
+                            <div style="font-size:16px;margin-right: 5px;"
+                                 ng-repeat="leg in route.LegList.Leg">
+                                <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
+                                    {{leg.line}}
+                                </i>
+                                <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
+                                    {{leg.line}}
+                                </i>
+                                <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
+                                    {{leg.dist}}
+                                </i>
+                                <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
+                                    {{leg.line}}
+                                </i>
+                            </div>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 10px;">
-                        <div style="font-size:16px;margin-right: 5px;"
-                             ng-repeat="leg in route.LegList.Leg">
-                            <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
-                                {{leg.line}}
-                            </i>
-                            <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
-                                {{leg.line}}
-                            </i>
-                            <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
-                                {{leg.dist}}
-                            </i>
-                            <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
-                                {{leg.line}}
-                            </i>
-                        </div>
+                    <div class="col col-center">
+                        <i class="icon ion-chevron-right" style="font-size:24px;"></i>
                     </div>
                 </div>
-                <div class="col col-center">
-                    <i class="icon ion-chevron-right" style="font-size:24px;"></i>
-                </div>
-
             </a>
         </div>
     </ion-content>
