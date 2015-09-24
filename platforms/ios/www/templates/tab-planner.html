@@ -1,17 +1,29 @@
 <ion-view view-title="Trip planner">
+    <ion-nav-buttons side="secondary">
+        <button class="button button-clear" ng-click="addFavouriteTrip()">
+            <i class="icon ion-star energized" ng-if="isFavourite"></i>
+            <i class="icon ion-star" ng-if="!isFavourite"></i>
+        </button>
+    </ion-nav-buttons>
     <ion-content>
         <div class="row">
             <div class="col">
                 <div class="list list-inset">
-                    <a class="item" ng-click="gotoStation('From');">
+                    <a class="item item-icon-left" ng-click="gotoStation('From');">
                         <div class="row row-no-padding">
-                            <div class="col col-33">From</div>
+                            <div class="col col-33">
+                                <i class="icon ion-location balanced"></i>
+                                From
+                            </div>
                             <div class="col col-67">{{fromStation.Name}}</div>
                         </div>
                     </a>
-                    <a class="item" ng-click="gotoStation('To');">
+                    <a class="item item-icon-left" ng-click="gotoStation('To');">
                         <div class="row row-no-padding">
-                            <div class="col col-33">To</div>
+                            <div class="col col-33">
+                                <i class="icon ion-location assertive"></i>
+                                To
+                            </div>
                             <div class="col col-67">{{toStation.Name}}</div>
                         </div>
                     </a>
@@ -20,10 +32,8 @@
                     </a>
                 </div>
             </div>
-            <div class="col col-10 col-center" ng-if="routes != undefined">
-                <a ng-click="addFavouriteTrip()">
-                    <i class="icon ion-ios-star-outline" style="font-size: 24px;"></i>
-                </a>
+            <div class="col col-10 col-center">
+                <button class="button button-icon icon ion-loop button-full" ng-click="exchangeStations()"></button>
             </div>
         </div>
 

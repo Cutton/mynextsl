@@ -3,12 +3,28 @@ angular.module('starter.controllers', [])
     .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q,$ionicLoading) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
+            if($scope.trips === undefined || $scope.trips.length != Localstorage.getObject("trips").length) {
+                $scope.trips = Localstorage.getObject("trips");
+                $scope.doRefresh();
+            }
 
-            $ionicLoading.show({
-                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+        });
+
+
+        $scope.deleteFavourite = function(index) {
+            var newtrips = [];
+            var tripIndex = 0;
+            angular.forEach($scope.trips, function(trip){
+                if(tripIndex != index) {
+                    newtrips.push(trip);
+                }
+                tripIndex++;
             });
-
+            Localstorage.setObject("trips",newtrips);
             $scope.trips = Localstorage.getObject("trips");
+        }
+
+        $scope.doRefresh = function(){
 
             var requestList = [];
             angular.forEach($scope.trips, function(trip){
@@ -27,12 +43,13 @@ angular.module('starter.controllers', [])
                     var datestring = result[0].LegList.Leg[0].Origin.date + "T" + result[0].LegList.Leg[0].Origin.time;// + "+0200"; //Add timezone
                     var starttime = new Date(datestring);
                     $scope.trips[index].Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
+                    if($scope.trips[index].Lefttime < 0) { $scope.trips[index].Lefttime = 0; }
 
                     index++;
                 });
-                $ionicLoading.hide();
+                $scope.$broadcast('scroll.refreshComplete');
             });
-        });
+        }
 
         $scope.selectTrip = function(route){
             Planner.setSelectedTrip(route);
@@ -70,8 +87,16 @@ angular.module('starter.controllers', [])
         $scope.$on('$ionicView.enter', function(){
             $scope.fromStation = Planner.getFrom();
             $scope.toStation = Planner.getTo();
+            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation);
         });
 
+        $scope.exchangeStations = function () {
+            Planner.setFrom($scope.toStation);
+            Planner.setTo($scope.fromStation);
+            $scope.fromStation = Planner.getFrom();
+            $scope.toStation = Planner.getTo();
+            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation);
+        }
 
         $scope.gotoStation = function(param) {
             $state.go('tab.selectstation',{fromorto: param});
@@ -108,6 +133,7 @@ angular.module('starter.controllers', [])
             var datestring = trip.Origin.date + "T" + trip.Origin.time;// + "+0200"; //Add timezone
             var starttime = new Date(datestring);
             trip.Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
+            if(trip.Lefttime < 0) { trip.Lefttime = 0; }
 
         }
 
@@ -116,20 +142,25 @@ angular.module('starter.controllers', [])
         }
 
         $scope.addFavouriteTrip = function() {
-            $ionicLoading.show({
-                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
-            });
+            if(!$scope.isFavourite) {
+                $ionicLoading.show({
+                    template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+                });
 
-            var trips = Localstorage.getObject('trips');
-            var trip = {
-                ResOrigin: $scope.fromStation,
-                ResDestination: $scope.toStation,
-                Lefttime: "*"
+                var trips = Localstorage.getObject('trips');
+                var trip = {
+                    ResOrigin: $scope.fromStation,
+                    ResDestination: $scope.toStation,
+                    Lefttime: "*"
+                }
+                trips.push(trip);
+                Localstorage.setObject('trips',trips);
+                $scope.isFavourite = true;
+                $ionicLoading.hide();
             }
-            trips.push(trip);
-            Localstorage.setObject('trips',trips);
-            $ionicLoading.hide();
         }
+
+
 
         /*
         $scope.addTrip = function(route) {
@@ -252,6 +283,7 @@ angular.module('starter.controllers', [])
                     });
                 });
             }
+
         });
 
 

@@ -319,6 +319,18 @@ angular.module('starter.services', [])
             });
         }
 
+        var isFavouriteTrip = function(fromStation, toStation) {
+            var isInFavourite = false;
+            var trips = Localstorage.getObject('trips');
+            angular.forEach(trips,function(trip){
+                if(trip.ResOrigin.SiteId == fromStation.SiteId
+                    && trip.ResDestination.SiteId == toStation.SiteId){
+                    isInFavourite = true;
+                }
+            });
+            return isInFavourite;
+        }
+
         /*
          * Return origin and destination stations data including SiteID according the sub-trip data
          * because sub-trip's origin and destination don't have siteid.
@@ -494,6 +506,7 @@ angular.module('starter.services', [])
             getTripOnlyWithStation: getTripOnlyWithStation,
             getAvailableWays: getAvailableWays,
             getTripDetails: getTripDetails,
+            isFavouriteTrip: isFavouriteTrip,
             setFrom: function (station) {
                 fromStation = station;
                 Localstorage.setObject("fromStation", station);

@@ -1,33 +1,34 @@
 <ion-view view-title="My Trips">
   <ion-content>
+    <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="doRefresh()">
+    </ion-refresher>
     <ion-list>
-      <a ng-click="selectTrip(route.nextTrip);" class="item row-no-padding" ng-repeat="route in trips">
+      <ion-item ng-click="selectTrip(route.nextTrip);" ng-repeat="route in trips">
         <div class="row">
           <div class="col-20 text-center col col-center">
             <h1>{{route.Lefttime}}</h1>
             <h6>min later</h6>
           </div>
-          <div class="col-75">
+          <div class="col col-75 col-center">
             <div class="row">
-              <div class="col">
-                <h2>
-                  {{route.ResOrigin.Name}}
-                </h2>
-              </div>
+              <div class="col col-10"><i class="icon ion-location balanced" style="font-size: 24px;padding: 3px;"></i></div>
+              <div class="col">{{route.ResOrigin.Name}}</div>
             </div>
-            <div class="row " style="margin-top: 5px;">
-              <div class="col">
-                <h2>
-                  {{route.ResDestination.Name}}
-                </h2>
-              </div>
+            <div class="row" style="margin-top: 10px;">
+              <div class="col col-10"><i class="icon ion-location assertive" style="font-size: 24px;padding: 3px;"></i></div>
+              <div class="col">{{route.ResDestination.Name}}</div>
             </div>
           </div>
           <div class="col col-center">
             <i class="icon ion-chevron-right" style="font-size:24px;"></i>
           </div>
+          <ion-option-button class="button-assertive" ng-click="deleteFavourite($index)">
+            Delete
+          </ion-option-button>
         </div>
-      </a>
+      </ion-item>
     </ion-list>
 
     <button ng-click="clear()">clear</button>
