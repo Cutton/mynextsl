@@ -1,0 +1,97 @@
+<ion-view>
+    <ion-nav-title>
+        <div ng-if="isongoing">
+            {{trip.LegList.Leg[0].Origin.name +" -> "+ trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}
+        </div>
+        <div ng-if="!isongoing">
+            Ongoing trip
+        </div>
+    </ion-nav-title>
+    <ion-content>
+        <div ng-if="!isongoing">There is no trip!</div>
+        <div class="list list-borderless" ng-if="isongoing">
+            <div class="item list list-borderless row-no-padding" ng-repeat="leg in trip.LegList.Leg">
+                <div class="item row item-borderless" ng-if="leg.type != 'WALK'">
+                    <div class="col col-10 text-center">
+                        <i class="ion-ios-circle-outline" style="font-size:24px;"></i>
+                    </div>
+                    <div class="col text-center col-center">
+                        <h3>{{leg.Origin.time}}</h3>
+                    </div>
+                    <div class="col col-75 text-left col-center">
+                        <h3>{{leg.Origin.name}}</h3>
+                    </div>
+                </div>
+                <div class="item row item-borderless row-no-padding">
+                    <div class="col col-10">
+                        <div class="timeline" ng-if="leg.type!='WALK'"></div>
+                        <div class="timeline-dashed" ng-if="leg.type=='WALK'"></div>
+                    </div>
+                    <div class="col col-center text-center" style="font-size: 30px;">
+                        <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway padding"></i>
+                        <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus"></i>
+                        <i ng-if="leg.type == 'WALK'" class="icon ion-android-walk"></i>
+                        <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train"></i>
+                    </div>
+                    <div class="col col-75">
+                        <div class="row">
+                            <div class="col col-90">
+                                <h3>{{leg.name}}</h3>
+                                <h3 style="color: darkgray;" ng-if="leg.type != 'WALK'">
+                                    Towards : {{leg.dir}}
+                                </h3>
+                                <h3 style="color: darkgray;" ng-if="leg.type == 'WALK'">
+                                    Distance : {{leg.dist}} meters
+                                </h3>
+                            </div>
+                            <div class="col col-10 col-center">
+                                <button class="button button-icon ion-chevron-down" ng-click="tripDetailSwitch($index)"
+                                        ng-if="leg.Destination.routeIdx-leg.Origin.routeIdx > 1
+                                            && leg.type != 'WALK'
+                                            && !leg.showTripDetail">
+                                </button>
+                                <button class="button button-icon ion-chevron-up" ng-click="tripDetailSwitch($index)"
+                                        ng-if="leg.Destination.routeIdx-leg.Origin.routeIdx > 1
+                                            && leg.type != 'WALK'
+                                            && leg.showTripDetail">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-item item-borderless row-no-padding" ng-if="leg.showTripDetail">
+
+                    <div class="item row row-no-padding" ng-repeat="stop in leg.Stops"
+                         ng-if="$index > leg.Origin.routeIdx && $index < leg.Destination.routeIdx">
+                        <div class="col col-10">
+                            <div class="timeline"></div>
+                        </div>
+                        <div class="col text-center" style="padding:5px 0;">
+                            <h3 style="color: darkgray;">{{stop.depTime}}</h3>
+                        </div>
+                        <div class="col col-75 text-left" style="padding:5px 0;">
+                            <h3 style="color: darkgray;">{{stop.name}}</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="item row" ng-if="leg.type != 'WALK'">
+                    <div class="col col-10 text-center">
+                        <i class="ion-ios-circle-filled" style="font-size:24px;"></i>
+                    </div>
+                    <div class="col text-center col-center">
+                        <h3>{{leg.Destination.time}}</h3>
+                    </div>
+                    <div class="col col-75 text-left col-center">
+                        <h3>{{leg.Destination.name}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar style="border: 0;">
+        <div class="button-bar">
+            <a class="button button-balanced" ng-click="finish()" ng-if="isongoing">Finish!</a>
+        </div>
+    </ion-footer-bar>
+</ion-view>

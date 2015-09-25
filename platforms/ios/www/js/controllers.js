@@ -1,15 +1,26 @@
 angular.module('starter.controllers', [])
 
-    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q,$ionicLoading) {
+    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $cordovaLocalNotification) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
             if($scope.trips === undefined || $scope.trips.length != Localstorage.getObject("trips").length) {
                 $scope.trips = Localstorage.getObject("trips");
                 $scope.doRefresh();
             }
-
         });
 
+        $scope.addNotification = function() {
+            var now = new Date().getTime();
+            var alerttime = new Date(now + 10 * 1000);
+            $cordovaLocalNotification.schedule({
+                id: 1,
+                title: 'Title here',
+                text: 'Text here',
+                at: alerttime
+            }).then(function(){
+                console.log("Notification Added!");
+            });
+        }
 
         $scope.deleteFavourite = function(index) {
             var newtrips = [];
@@ -61,24 +72,6 @@ angular.module('starter.controllers', [])
             Localstorage.setObject('trips',[]);
             $state.go($state.current, {}, {reload: true});
         }
-
-    })
-
-    .controller('TripDetailCtrl', function ($scope, $stateParams, $q, Localstorage, Planner) {
-
-        var trips = Localstorage.getObject("trips");
-        $scope.trip = trips[$stateParams.tripIndex];
-
-        var requestList = [];
-        angular.forEach($scope.trip.Subtrip, function(subtrip){
-            requestList.push(Planner.getAvailableWays(subtrip.Origin.SiteId, subtrip.Destination.SiteId));
-        });
-
-        $q.all(requestList).then(function(waysList){
-            $scope.waysList = waysList;
-        });
-
-
     })
 
     .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, $state, Stations, $stateParams) {
@@ -160,60 +153,6 @@ angular.module('starter.controllers', [])
             }
         }
 
-
-
-        /*
-        $scope.addTrip = function(route) {
-
-            $ionicLoading.show({
-                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
-            });
-
-            if(angular.isArray(route.LegList.Leg)) {
-
-                var requestList = [];
-
-                angular.forEach(route.LegList.Leg, function(leg){
-                    if(leg.type !== "WALK") {
-                        requestList.push(Planner.getTripOnlyWithStation(leg));
-                    }
-                });
-
-                $q.all(requestList).then(function(results){
-                    var trip = {
-                        ResOrigin: results[0].Origin,
-                        ResDestination: results[results.length-1].Destination,
-                        Subtrip:[]
-                    };
-                    angular.forEach(results, function(result){
-                        trip.Subtrip.push(result);
-                    })
-                    var trips = Localstorage.getObject('trips');
-                    trips.push(trip);
-                    Localstorage.setObject('trips',trips);
-                    $ionicLoading.hide();
-                });
-
-
-            } else {
-
-                Planner.getTripOnlyWithStation(route.LegList.Leg).then(function(result){
-                    var trips = Localstorage.getObject('trips');
-                    var trip = {
-                        ResOrigin: result.Origin,
-                        ResDestination: result.Destination,
-                        Subtrip: [result]
-                    }
-                    trips.push(trip);
-                    Localstorage.setObject('trips',trips);
-                    $ionicLoading.hide();
-                });
-
-            }
-
-
-
-        }*/
     })
 
     .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading) {
@@ -248,7 +187,7 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('TripInfoCtrl', function ($scope, Planner, $q, $ionicLoading) {
+    .controller('TripInfoCtrl', function ($scope, Planner, $q, Localstorage, $state, $ionicLoading) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -297,32 +236,25 @@ angular.module('starter.controllers', [])
 
         }
 
-
-
-    })
-
-
-    .controller('ChatsCtrl', function ($scope, Chats) {
-        // With the new view caching in Ionic, Controllers are only called
-        // when they are recreated or on app start, instead of every page change.
-        // To listen for when this page is active (for example, to refresh data),
-        // listen for the $ionicView.enter event:
-        //
-        //$scope.$on('$ionicView.enter', function(e) {
-        //});
-
-        $scope.chats = Chats.all();
-        $scope.remove = function (chat) {
-            Chats.remove(chat);
+        $scope.gotrip = function(trip) {
+            Localstorage.setObject('ongoing',trip);
+            $state.go('tab.currenttrip');
         }
+
     })
 
-    .controller('ChatDetailCtrl', function ($scope, $stateParams, Chats) {
-        $scope.chat = Chats.get($stateParams.chatId);
-    })
+    .controller('CurrentTripCtrl', function($scope, Localstorage){
 
-    .controller('AccountCtrl', function ($scope) {
-        $scope.settings = {
-            enableFriends: true
-        };
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.trip = Localstorage.getObject('ongoing');
+            $scope.isongoing = $scope.trip == null ? false:true;
+        });
+
+
+        $scope.finish = function(){
+            Localstorage.setObject('ongoing',null);
+            $scope.trip = Localstorage.getObject('ongoing');
+            $scope.isongoing = false;
+        }
+
     });

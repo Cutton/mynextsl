@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -46,6 +45,11 @@
 		C992FA22CC2440A8A220C7FC /* IonicKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9889E298E4BD41F18A4C0630 /* IonicKeyboard.m */; };
 		D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */; };
 		ED410A5833C5407293FAB8ED /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 09D10A2B703C4F05BFFD270E /* CDVDevice.m */; };
+		6C44F42C865E48AA9EE629A9 /* AppDelegate+APPRegisterUserNotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B074D620A42CBA76636B9 /* AppDelegate+APPRegisterUserNotificationSettings.m */; };
+		DA331E8EE2B64B1993CBE8CD /* APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F4700286569B4AE18B73488A /* APPLocalNotification.m */; };
+		02C502AE2D9342A4A04A517B /* APPLocalNotificationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94915981349E4417AD03BBC7 /* APPLocalNotificationOptions.m */; };
+		00505ACB5E79424AA457C284 /* UIApplication+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EF7028539646819462A887 /* UIApplication+APPLocalNotification.m */; };
+		C1B0CD4A06D0489D80896327 /* UILocalNotification+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE7913856F84D2091DC6815 /* UILocalNotification+APPLocalNotification.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +125,16 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F433A97836C14E53814E43BD /* CDVLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLogger.h; path = "cordova-plugin-console/CDVLogger.h"; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = myapp/config.xml; sourceTree = "<group>"; };
+		0A6B074D620A42CBA76636B9 /* AppDelegate+APPRegisterUserNotificationSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+APPRegisterUserNotificationSettings.m"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		499E6848EE5247EFAE30DD3C /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		F4700286569B4AE18B73488A /* APPLocalNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPLocalNotification.m"; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotification.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		94915981349E4417AD03BBC7 /* APPLocalNotificationOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPLocalNotificationOptions.m"; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		A2EF7028539646819462A887 /* UIApplication+APPLocalNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIApplication+APPLocalNotification.m"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		CDE7913856F84D2091DC6815 /* UILocalNotification+APPLocalNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UILocalNotification+APPLocalNotification.m"; path = "de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		9DFF03F9403541A485E527FE /* APPLocalNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		5BCDF9D46A5B4ACE81CDC870 /* APPLocalNotificationOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPLocalNotificationOptions.h"; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		08B5C0A8BB9845B5951D1CD1 /* UIApplication+APPLocalNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIApplication+APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		CE4BEF82F9B846FD9000C10C /* UILocalNotification+APPLocalNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UILocalNotification+APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,6 +245,16 @@
 				A7B1DA7926FD4C1E8ED22F0E /* CDVViewController+SplashScreen.m */,
 				0D58F1BB2D054762B17E99F0 /* CDVSplashScreen.h */,
 				DB0817EC52194BC38D11BE2B /* CDVViewController+SplashScreen.h */,
+				0A6B074D620A42CBA76636B9 /* AppDelegate+APPRegisterUserNotificationSettings.m */,
+				499E6848EE5247EFAE30DD3C /* AppDelegate+APPRegisterUserNotificationSettings.h */,
+				F4700286569B4AE18B73488A /* APPLocalNotification.m */,
+				94915981349E4417AD03BBC7 /* APPLocalNotificationOptions.m */,
+				A2EF7028539646819462A887 /* UIApplication+APPLocalNotification.m */,
+				CDE7913856F84D2091DC6815 /* UILocalNotification+APPLocalNotification.m */,
+				9DFF03F9403541A485E527FE /* APPLocalNotification.h */,
+				5BCDF9D46A5B4ACE81CDC870 /* APPLocalNotificationOptions.h */,
+				08B5C0A8BB9845B5951D1CD1 /* UIApplication+APPLocalNotification.h */,
+				CE4BEF82F9B846FD9000C10C /* UILocalNotification+APPLocalNotification.h */,
 			);
 			name = Plugins;
 			path = myapp/Plugins;
@@ -426,6 +450,11 @@
 				ED410A5833C5407293FAB8ED /* CDVDevice.m in Sources */,
 				97F94D645D74460EAC202E13 /* CDVSplashScreen.m in Sources */,
 				77B0CECF9F4447999C977FE6 /* CDVViewController+SplashScreen.m in Sources */,
+				6C44F42C865E48AA9EE629A9 /* AppDelegate+APPRegisterUserNotificationSettings.m in Sources */,
+				DA331E8EE2B64B1993CBE8CD /* APPLocalNotification.m in Sources */,
+				02C502AE2D9342A4A04A517B /* APPLocalNotificationOptions.m in Sources */,
+				00505ACB5E79424AA457C284 /* UIApplication+APPLocalNotification.m in Sources */,
+				C1B0CD4A06D0489D80896327 /* UILocalNotification+APPLocalNotification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
