@@ -1,5 +1,9 @@
 angular.module('starter.controllers', [])
 
+
+    /*
+    * My trips controller
+    * */
     .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $cordovaLocalNotification) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
@@ -7,20 +11,10 @@ angular.module('starter.controllers', [])
                 $scope.trips = Localstorage.getObject("trips");
                 $scope.doRefresh();
             }
-        });
 
-        $scope.addNotification = function() {
-            var now = new Date().getTime();
-            var alerttime = new Date(now + 10 * 1000);
-            $cordovaLocalNotification.schedule({
-                id: 1,
-                title: 'Title here',
-                text: 'Text here',
-                at: alerttime
-            }).then(function(){
-                console.log("Notification Added!");
-            });
-        }
+            $scope.autoRefresh = setInterval($scope.doRefresh, 30000);
+
+        });
 
         $scope.deleteFavourite = function(index) {
             var newtrips = [];
@@ -72,8 +66,17 @@ angular.module('starter.controllers', [])
             Localstorage.setObject('trips',[]);
             $state.go($state.current, {}, {reload: true});
         }
+
+        $scope.$on('$ionicView.beforeLeave', function(){
+            clearInterval($scope.autoRefresh);
+
+        });
     })
 
+
+    /*
+     * Trip planner controller
+     * */
     .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, $state, Stations, $stateParams) {
 
 
@@ -125,7 +128,8 @@ angular.module('starter.controllers', [])
             //Calculate left time
             var datestring = trip.Origin.date + "T" + trip.Origin.time;// + "+0200"; //Add timezone
             var starttime = new Date(datestring);
-            trip.Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
+            //Bad tempory fix for timezone problem, because iOS doesn't support "+0200"
+            trip.Lefttime = Math.round((starttime-now)/60000) - 120;
             if(trip.Lefttime < 0) { trip.Lefttime = 0; }
 
         }
@@ -155,6 +159,10 @@ angular.module('starter.controllers', [])
 
     })
 
+
+    /*
+     * Select station controller
+     * */
     .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading) {
 
         $scope.fromorto = $stateParams.fromorto;
@@ -187,7 +195,12 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('TripInfoCtrl', function ($scope, Planner, $q, Localstorage, $state, $ionicLoading) {
+
+
+    /*
+     * Detailed trip info controller
+     * */
+    .controller('TripInfoCtrl', function ($scope, Planner, $q, Localstorage, $state, $cordovaLocalNotification, $ionicLoading) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -198,13 +211,17 @@ angular.module('starter.controllers', [])
 
         $scope.$on('$ionicView.beforeEnter', function(){
 
+            $ionicLoading.show({
+                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+            });
+
             $scope.trip = Planner.getSelectedTrip();
             if(!angular.isArray($scope.trip.LegList.Leg)) {
                 $scope.trip.LegList.Leg = [$scope.trip.LegList.Leg];
             }
 
             var requestList = [];
-            if(angular.isArray($scope.trip.LegList.Leg)) {
+            if($scope.trip.LegList.Leg.Stops == undefined) {
                 angular.forEach($scope.trip.LegList.Leg, function(leg){
                     if(leg.JourneyDetailRef !== undefined) {
                         requestList.push(Planner.getTripDetails(leg.JourneyDetailRef.ref));
@@ -220,11 +237,11 @@ angular.module('starter.controllers', [])
                             i++;
                         }
                     });
+                    $ionicLoading.hide();
                 });
             }
 
         });
-
 
 
         $scope.tripDetailSwitch = function(legIndex) {
@@ -236,25 +253,163 @@ angular.module('starter.controllers', [])
 
         }
 
+        var setNotifications = function(trip){
+            var index = 0;
+            var notificationList = [];
+            angular.forEach(trip.LegList.Leg, function(leg){
+                if(leg.type != "WALK"){
+                    if(index != 0){
+                        var triptime = new Date(leg.Origin.date+"T"+leg.Origin.time);
+                        triptime = triptime - 120*60000;
+                        var alerttime = new Date(triptime - 2*60000);
+                        var notification = {
+                            id: leg.Origin.id+index.toString(),
+                            text: leg.name+' towards '+leg.dir+' is coming soon. Please prepare to get on.',
+                            at: alerttime
+                        }
+                        notificationList.push(notification);
+                    }
+                    var triptime = new Date(leg.Destination.date+"T"+leg.Destination.time);
+                    triptime = triptime - 120*60000;
+                    var alerttime = new Date(triptime - 1*60000);
+                    var notification = {
+                        id: leg.Destination.id+index.toString(),
+                        text: 'You are about to arrive '+leg.Destination.name+'. Please prepare to get off.',
+                        at: alerttime
+                    }
+                    notificationList.push(notification);
+                }
+                index++;
+            });
+            $cordovaLocalNotification.schedule(notificationList).then(function(){
+                console.log("Notfications are added!");
+            });
+        }
+
         $scope.gotrip = function(trip) {
             Localstorage.setObject('ongoing',trip);
+            setNotifications(trip);
             $state.go('tab.currenttrip');
         }
 
     })
 
-    .controller('CurrentTripCtrl', function($scope, Localstorage){
+
+    /*
+     * Ongoing trip controller
+     * */
+    .controller('CurrentTripCtrl', function($scope, Localstorage, $ionicPopup, $cordovaLocalNotification, $state){
 
         $scope.$on('$ionicView.beforeEnter', function(){
+            var prepareData = function(trip){
+                var tripList = [];
+                angular.forEach(trip.LegList.Leg, function(leg){
+                    if(leg.type != "WALK") {
+                        var tripUnit = {
+                            type: "Origin",
+                            name: leg.Origin.name,
+                            time: leg.Origin.time,
+                            date: leg.Origin.date,
+                            dir: leg.dir,
+                            traffictype: leg.type,
+                            line: leg.line
+                        }
+                        tripList.push(tripUnit);
+                        angular.forEach(leg.Stops, function(stop){
+                            if(parseInt(stop.routeIdx) < parseInt(leg.Destination.routeIdx)
+                                && parseInt(stop.routeIdx) > parseInt(leg.Origin.routeIdx) ){
+                                var tripUnit = {
+                                    type: "Stop",
+                                    name: stop.name,
+                                    time: stop.depTime,
+                                    date: stop.depDate
+                                }
+                                tripList.push(tripUnit);
+                            }
+                        });
+                        tripUnit = {
+                            type: "Destination",
+                            name: leg.Destination.name,
+                            time: leg.Destination.time,
+                            date: leg.Destination.date
+                        }
+                        tripList.push(tripUnit);
+                    } else {
+                        var tripUnit = {
+                            type: "Walk",
+                            dist: leg.dist,
+                            time: leg.Destination.time,
+                            date: leg.Destination.date
+                        }
+                        tripList.push(tripUnit);
+                    }
+                });
+                updateStatus(tripList);
+                return tripList;
+            }
+
+            var updateStatus = function(tripList){
+                var now=Date.now();
+                angular.forEach(tripList, function(trip){
+                    var triptime = new Date(trip.date+"T"+trip.time);
+                    if(now > triptime-120*60000){
+                        trip.status = "finished";
+                    } else {
+                        if($scope.onGoingTrip){
+                            trip.status = "todo";
+                        } else {
+                            trip.status = "ongoing";
+                            $scope.onGoingTrip = true;
+                        }
+                    }
+                });
+            }
+
             $scope.trip = Localstorage.getObject('ongoing');
-            $scope.isongoing = $scope.trip == null ? false:true;
+            if($scope.trip == null) {
+                $scope.isongoing = false;
+            } else {
+                $scope.isongoing = true;
+                $scope.onGoingTrip = false;
+                $scope.tripList = prepareData($scope.trip);
+            }
+
+            $scope.time = new Date();
+
+            var autoRefresh = function() {
+                if(Date.now() - $scope.time > 30000) {
+                    console.log("Refreshed!");
+                    $state.go($state.current, {}, {reload: true});
+                } else {
+                    $scope.timeout = setTimeout(autoRefresh, 30000);
+                }
+            }
+            if($scope.isongoing) {
+                autoRefresh();
+            }
         });
 
-
         $scope.finish = function(){
-            Localstorage.setObject('ongoing',null);
-            $scope.trip = Localstorage.getObject('ongoing');
-            $scope.isongoing = false;
+
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Do you want to finish this trip?'
+            });
+            confirmPopup.then(function(res) {
+                if(res) {
+                    Localstorage.setObject('ongoing',null);
+                    $scope.trip = Localstorage.getObject('ongoing');
+                    $scope.isongoing = false;
+                    $cordovaLocalNotification.cancelAll().then(function(){
+                        console.log("All notifications are cancelled.");
+                    });
+                } else {
+                    //nothing to do
+                }
+            });
         }
+
+        $scope.$on('$ionicView.beforeLeave',function(){
+            clearTimeout($scope.timeout);
+        });
 
     });

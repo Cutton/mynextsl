@@ -5,7 +5,7 @@
             on-refresh="doRefresh()">
     </ion-refresher>
     <ion-list>
-      <ion-item ng-click="selectTrip(route.nextTrip);" ng-repeat="route in trips">
+      <ion-item class="card" ng-click="selectTrip(route.nextTrip);" ng-repeat="route in trips">
         <div class="row">
           <div class="col-20 text-center col col-center">
             <h1>{{route.Lefttime}}</h1>
@@ -30,9 +30,10 @@
         </div>
       </ion-item>
     </ion-list>
+    <div class="positive-bg" ng-if="test.a">{{test}}</div>
+    <div class="energized-bg" ng-if="!test.a">{{test}}</div>
 
     <button ng-click="clear()">clear</button>
-    <button ng-click="addNotification()">Notification</button>
     <!--<p>{{trips}}</p>-->
   </ion-content>
 </ion-view>
