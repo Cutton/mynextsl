@@ -1,74 +1,86 @@
-<ion-view view-title="Trip planner">
-    <ion-nav-buttons side="secondary">
-        <button class="button button-clear" ng-click="addFavouriteTrip()">
-            <i class="icon ion-star energized" ng-if="isFavourite"></i>
-            <i class="icon ion-star" ng-if="!isFavourite"></i>
-        </button>
-    </ion-nav-buttons>
-    <ion-content>
-        <div class="row">
-            <div class="col">
-                <div class="list list-inset">
-                    <a class="item item-icon-left" ng-click="gotoStation('From');">
-                        <div class="row row-no-padding">
-                            <div class="col col-33">
-                                <i class="icon ion-location balanced"></i>
-                                From
-                            </div>
-                            <div class="col col-67">{{fromStation.Name}}</div>
+<ion-view hide-nav-bar="true">
+    <div class="bar bar-subheader bar-positive custom">
+        <div class="list">
+            <div class="row item-input-inset row-no-padding">
+                <div class="col col-90">
+                    <div class="row">
+                        <div class="col col-20">From</div>
+                        <a class="col" ng-click="gotoStation('From');">
+                            <div class="item-input-wrapper dark" >{{fromStation.Name}}</div>
+                        </a>
+                    </div>
+                    <div class="row">
+                        <div class="col col-20">To</div>
+                        <div class="col" ng-click="gotoStation('To');">
+                            <div class="item-input-wrapper dark" >{{toStation.Name}}</div>
                         </div>
-                    </a>
-                    <a class="item item-icon-left" ng-click="gotoStation('To');">
-                        <div class="row row-no-padding">
-                            <div class="col col-33">
-                                <i class="icon ion-location assertive"></i>
-                                To
-                            </div>
-                            <div class="col col-67">{{toStation.Name}}</div>
-                        </div>
-                    </a>
-                    <a class="button button-positive button-full" style="margin-bottom: 0px;" ng-click="searchRoutes()">
-                        Search
-                    </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <button class="button button-icon icon ion-loop button-full" ng-click="exchangeStations()"></button>
                 </div>
             </div>
-            <div class="col col-10 col-center">
-                <button class="button button-icon icon ion-loop button-full" ng-click="exchangeStations()"></button>
+            <div class="row item-input-inset row-no-padding">
+                <div class="col col-10 text-center">
+                    <button class="button button-clear" ng-click="addFavouriteTrip()">
+                        <i class="icon ion-android-star energized" ng-if="isFavourite"></i>
+                        <i class="icon ion-android-star" ng-if="!isFavourite"></i>
+                    </button>
+                </div>
+                <div class="col text-center">
+                    <!--
+                    <select class="button button-clear button-large">
+                        <option selected>Leave now</option>
+                        <option>Leave at</option>
+                        <option>Arrive at</option>
+                    </select>
+                    -->
+                </div>
+                <div class="col col-20 text-center">
+                    <button class="button button-clear" ng-click="searchRoutes()">
+                        Search
+                    </button>
+                </div>
             </div>
         </div>
-
-        <div class="list list-inset">
+    </div>
+    <ion-content class="has-subheader-custom">
+        <div class="list">
             <a href="#/tab/planner/trip/{{$index}}" class="item row-no-padding"
                ng-repeat="route in routes" ng-click="selectTrip(route);">
-                <div class="row">
-                    <div class="col-20 text-center col">
-                        <h1>{{route.Lefttime}}</h1>
-                        <h6>min later</h6>
+                <div class="row row-no-padding">
+                    <div class="col-20 col fullfillgrid">
+                        <div class="fullfillComponent text-center">
+                            <div style="font-size:43px;line-height: 43px;">{{route.Lefttime}}</div>
+                            <p style="font-size:10px;">min later</p>
+                        </div>
                     </div>
-                    <div class="col-75 col-center col">
+                    <div class="col-75 col">
                         <div class="row">
                             <div class="col col-75">
                                 {{route.Origin.time+" - "+route.Destination.time}}
                             </div>
-                            <div class="col col-25 col-center">
+                            <div class="col col-25">
                                 <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
                             </div>
                         </div>
-                        <div class="row" style="margin-top: 5px;">
-                            <div style="font-size:16px;margin-right: 5px;"
-                                 ng-repeat="leg in route.LegList.Leg">
-                                <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
-                                    {{leg.line}}
-                                </i>
-                                <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
-                                    {{leg.line}}
-                                </i>
-                                <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
-                                    {{leg.dist}}
-                                </i>
-                                <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
-                                    {{leg.line}}
-                                </i>
+                        <div class="row">
+                            <div class="col">
+                                <span
+                                     ng-repeat="leg in route.LegList.Leg">
+                                    <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
+                                        {{leg.line}}
+                                    </i>
+                                    <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
+                                        {{leg.line}}
+                                    </i>
+                                    <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
+                                        {{leg.dist}}
+                                    </i>
+                                    <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
+                                        {{leg.line}}
+                                    </i>
+                                </span>
                             </div>
                         </div>
                     </div>

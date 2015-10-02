@@ -37,20 +37,20 @@ angular.module('starter.controllers', [])
             });
 
             var now = Date.now();
-            var index = 0;
             $q.all(requestList).then(function(results){
-                angular.forEach(results,function(result){
-                    if(!angular.isArray(result[0].LegList.Leg)) {
-                        result[0].LegList.Leg = [result[0].LegList.Leg];
-                    }
-                    $scope.trips[index].nextTrip = result[0];
-                    //Calculate left time
-                    var datestring = result[0].LegList.Leg[0].Origin.date + "T" + result[0].LegList.Leg[0].Origin.time;// + "+0200"; //Add timezone
-                    var starttime = new Date(datestring);
-                    $scope.trips[index].Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
-                    if($scope.trips[index].Lefttime < 0) { $scope.trips[index].Lefttime = 0; }
-
-                    index++;
+                angular.forEach(results,function(routes,key){
+                    $scope.trips[key].routes = [];
+                    angular.forEach(routes,function(route){
+                        if(!angular.isArray(route.LegList.Leg)) {
+                            route.LegList.Leg = [route.LegList.Leg];
+                        }
+                        //Calculate left time
+                        var datestring = route.LegList.Leg[0].Origin.date + "T" + route.LegList.Leg[0].Origin.time;// + "+0200"; //Add timezone
+                        var starttime = new Date(datestring);
+                        route.Lefttime = Math.round((starttime-now)/60000) - 120;//Bad tempory fix for timezone problem
+                        if(route.Lefttime < 0) { route.Lefttime = 0; }
+                        $scope.trips[key].routes.push(route);
+                    });
                 });
                 $scope.$broadcast('scroll.refreshComplete');
             });
@@ -62,14 +62,16 @@ angular.module('starter.controllers', [])
         }
 
 
-        $scope.clear = function(){
-            Localstorage.setObject('trips',[]);
-            $state.go($state.current, {}, {reload: true});
+        $scope.toggleRoutes = function(trip) {
+            trip.show = !trip.show;
+        }
+
+        $scope.isRoutesShown = function(trip) {
+            return trip.show;
         }
 
         $scope.$on('$ionicView.beforeLeave', function(){
             clearInterval($scope.autoRefresh);
-
         });
     })
 
@@ -83,7 +85,7 @@ angular.module('starter.controllers', [])
         $scope.$on('$ionicView.enter', function(){
             $scope.fromStation = Planner.getFrom();
             $scope.toStation = Planner.getTo();
-            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation);
+            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation) != -1? true:false;
         });
 
         $scope.exchangeStations = function () {
@@ -91,7 +93,7 @@ angular.module('starter.controllers', [])
             Planner.setTo($scope.fromStation);
             $scope.fromStation = Planner.getFrom();
             $scope.toStation = Planner.getTo();
-            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation);
+            $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation) != -1? true:false;
         }
 
         $scope.gotoStation = function(param) {
@@ -139,11 +141,10 @@ angular.module('starter.controllers', [])
         }
 
         $scope.addFavouriteTrip = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
+            });
             if(!$scope.isFavourite) {
-                $ionicLoading.show({
-                    template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
-                });
-
                 var trips = Localstorage.getObject('trips');
                 var trip = {
                     ResOrigin: $scope.fromStation,
@@ -153,8 +154,21 @@ angular.module('starter.controllers', [])
                 trips.push(trip);
                 Localstorage.setObject('trips',trips);
                 $scope.isFavourite = true;
-                $ionicLoading.hide();
+
+            } else {
+                var newtrips = [];
+                var tripIndex = 0;
+                var deleteIndex = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation);
+                angular.forEach(Localstorage.getObject("trips"), function(trip){
+                    if(tripIndex != deleteIndex) {
+                        newtrips.push(trip);
+                    }
+                    tripIndex++;
+                });
+                Localstorage.setObject("trips",newtrips);
+                $scope.isFavourite = false;
             }
+            $ionicLoading.hide();
         }
 
     })
@@ -258,21 +272,21 @@ angular.module('starter.controllers', [])
             var notificationList = [];
             angular.forEach(trip.LegList.Leg, function(leg){
                 if(leg.type != "WALK"){
-                    if(index != 0){
-                        var triptime = new Date(leg.Origin.date+"T"+leg.Origin.time);
-                        triptime = triptime - 120*60000;
-                        var alerttime = new Date(triptime - 2*60000);
-                        var notification = {
-                            id: leg.Origin.id+index.toString(),
-                            text: leg.name+' towards '+leg.dir+' is coming soon. Please prepare to get on.',
-                            at: alerttime
-                        }
-                        notificationList.push(notification);
-                    }
-                    var triptime = new Date(leg.Destination.date+"T"+leg.Destination.time);
+
+                    var triptime = new Date(leg.Origin.date+"T"+leg.Origin.time);
                     triptime = triptime - 120*60000;
-                    var alerttime = new Date(triptime - 1*60000);
+                    var alerttime = new Date(triptime - 2*60000);
                     var notification = {
+                        id: leg.Origin.id+index.toString(),
+                        text: leg.name+' towards '+leg.dir+' is coming soon. Please prepare to get on.',
+                        at: alerttime
+                    }
+                    notificationList.push(notification);
+
+                    triptime = new Date(leg.Destination.date+"T"+leg.Destination.time);
+                    triptime = triptime - 120*60000;
+                    alerttime = new Date(triptime - 1*60000);
+                    notification = {
                         id: leg.Destination.id+index.toString(),
                         text: 'You are about to arrive '+leg.Destination.name+'. Please prepare to get off.',
                         at: alerttime

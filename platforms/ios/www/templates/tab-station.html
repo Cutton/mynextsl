@@ -1,21 +1,19 @@
-<ion-view view-title="{{fromorto | uppercase}}" cache-view="false">
-
-    <form ng-submit="search(station)">
-        <div class="bar bar-subheader item-input-inset">
-            <label class="item-input-wrapper">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" ng-model="station.name" focus-me />
-            </label>
+<ion-view cache-view="false">
+    <ion-nav-title>
+        <form ng-submit="search(station)">
+            <div class="item-input-inset" style="padding: 7px;">
+                <label class="item-input-wrapper">
+                    <input type="text" ng-model="station.name" placeholder="{{fromorto}}" focus-me />
+                </label>
+                <button ng-if="station.name.length" type="button" style="border: 0;min-height:29px;height: 29px;"
+                        class="button icon ion-close-circled" ng-click="station.name = ''"></button>
+            </div>
             <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
-            <button ng-if="station.name.length" type="button"
-                    class="button button-clear ion-close-circled" ng-click="station.name = ''"></button>
+        </form>
+    </ion-nav-title>
+    <ion-content>
+        <div class="list">
+            <a class="item" ng-repeat="item in searchResults" ng-click="setStation(item)">{{item.Name}}</a>
         </div>
-    </form>
-    <ion-content class="has-subheader">
-        <ion-list>
-            <ion-item ng-repeat="item in searchResults">
-                <a class="item item-borderless" ng-click="setStation(item)">{{item.Name}}</a>
-            </ion-item>
-        </ion-list>
     </ion-content>
 </ion-view>
