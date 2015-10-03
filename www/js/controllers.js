@@ -178,7 +178,10 @@ angular.module('starter.controllers', [])
     /*
      * Select station controller
      * */
-    .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading) {
+    .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading, $rootScope) {
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $rootScope.$broadcast('inState',{state:'selectstation'});
+        });
 
         $scope.fromorto = $stateParams.fromorto;
 
@@ -207,6 +210,10 @@ angular.module('starter.controllers', [])
             }
             $state.go('tab.planner');
         }
+
+        $scope.$on('$ionicView.beforeLeave',function(){
+            $rootScope.$broadcast('inState',{state:'leaveSelectstation'});
+        });
 
     })
 
@@ -332,7 +339,15 @@ angular.module('starter.controllers', [])
             $scope.isongoing = true;
         });
         $rootScope.$on('inState', function (event, args) {
-            $scope.inState = args.state;
+            if(args.state == "mytrips" || args.state == "tripplanner") {
+                $scope.inState = args.state;
+            } else if(args.state == "selectstation"){
+                clearTimeout($scope.refreshProgress);
+            } else if(args.state == "leaveSelectstation") {
+                $scope.refreshProgress = setInterval($scope.updateProgress, 10000);
+            } else {
+                //
+            }
         });
         $rootScope.$on('tripProgress', function (event, args) {
             $scope.progress = args.progress;
@@ -345,7 +360,7 @@ angular.module('starter.controllers', [])
             } else if($scope.inState == "tripplanner") {
                 $state.go('tab.planner-currenttrip');
             } else {
-             //
+                //
             }
         }
 

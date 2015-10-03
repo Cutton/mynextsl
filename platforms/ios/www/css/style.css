@@ -138,3 +138,9 @@ progress[value]::-webkit-progress-bar {
 progress[value]::-webkit-progress-value {
     background-color: #33cd5f;
 }
+
+.no-text-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
