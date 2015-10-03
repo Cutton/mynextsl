@@ -1,10 +1,8 @@
 angular.module('starter.controllers', [])
-
-
     /*
     * My trips controller
     * */
-    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $cordovaLocalNotification) {
+    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $rootScope, $cordovaLocalNotification) {
 
         $scope.$on('$ionicView.beforeEnter', function(){
             if($scope.trips === undefined || $scope.trips.length != Localstorage.getObject("trips").length) {
@@ -13,6 +11,8 @@ angular.module('starter.controllers', [])
             }
 
             $scope.autoRefresh = setInterval($scope.doRefresh, 30000);
+
+            $rootScope.$broadcast('inState',{state:'mytrips'});
 
         });
 
@@ -79,10 +79,11 @@ angular.module('starter.controllers', [])
     /*
      * Trip planner controller
      * */
-    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, $state, Stations, $stateParams) {
+    .controller('PlannerCtrl', function ($scope, Planner, $ionicLoading, $q, Localstorage, $state, $rootScope, Stations, $stateParams) {
 
 
         $scope.$on('$ionicView.enter', function(){
+            $rootScope.$broadcast('inState',{state:'tripplanner'});
             $scope.fromStation = Planner.getFrom();
             $scope.toStation = Planner.getTo();
             $scope.isFavourite = Planner.isFavouriteTrip($scope.fromStation, $scope.toStation) != -1? true:false;
@@ -214,7 +215,7 @@ angular.module('starter.controllers', [])
     /*
      * Detailed trip info controller
      * */
-    .controller('TripInfoCtrl', function ($scope, Planner, $q, Localstorage, $state, $cordovaLocalNotification, $ionicLoading) {
+    .controller('TripInfoCtrl', function ($rootScope, $scope, $ionicHistory, Planner, $q, Localstorage, $state, $cordovaLocalNotification, $ionicLoading) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -302,17 +303,81 @@ angular.module('starter.controllers', [])
 
         $scope.gotrip = function(trip) {
             Localstorage.setObject('ongoing',trip);
+            $rootScope.$broadcast('addOnGoingTrip',{message:'a'});
             setNotifications(trip);
-            $state.go('tab.currenttrip');
+            $ionicHistory.goBack();
+
         }
 
     })
 
+    /*
+     * footer controller
+     * */
+    .controller('FooterCtrl', function ($rootScope, $scope, Localstorage, $state, $stateParams, Stations, Planner, $ionicLoading) {
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.trip = Localstorage.getObject('ongoing');
+            if($scope.trip == null) {
+                $scope.isongoing = false;
+            } else {
+                $scope.isongoing = true;
+                $scope.progress = calculateProgress($scope.trip);
+                if($scope.refreshProgress == undefined){
+                    $scope.refreshProgress = setInterval($scope.updateProgress, 10000);
+                }
+            }
+
+        });
+        $rootScope.$on('addOnGoingTrip', function (event, args) {
+            $scope.isongoing = true;
+        });
+        $rootScope.$on('inState', function (event, args) {
+            $scope.inState = args.state;
+        });
+        $rootScope.$on('tripProgress', function (event, args) {
+            $scope.progress = args.progress;
+            $state.go($state.current, {}, {reload: true});
+        });
+
+        $scope.gotoCurrentTrip = function() {
+            if($scope.inState == "mytrips"){
+                $state.go('tab.mytrips-currenttrip');
+            } else if($scope.inState == "tripplanner") {
+                $state.go('tab.planner-currenttrip');
+            } else {
+             //
+            }
+        }
+
+        var calculateProgress = function(trip) {
+            var progress = 0;
+            var start = new Date(trip.LegList.Leg[0].Origin.date+"T"+trip.LegList.Leg[0].Origin.time);
+            start = start - 120*60000;
+            var end = new Date(trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.date
+                +"T"+trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time);
+            end = end - 120*60000;
+            var now = new Date();
+            if(now < start){
+                progress = 0;
+            } else if(now > end) {
+                progress = 100;
+            } else {
+                progress = (now-start)/(end-start);
+                progress = Math.round(progress*100);
+            }
+            return progress;
+        }
+
+        $scope.updateProgress = function(){
+            $rootScope.$broadcast("tripProgress",{progress: calculateProgress($scope.trip)});
+        }
+
+    })
 
     /*
      * Ongoing trip controller
      * */
-    .controller('CurrentTripCtrl', function($scope, Localstorage, $ionicPopup, $cordovaLocalNotification, $state){
+    .controller('CurrentTripCtrl', function($scope, Localstorage, $ionicPopup, $cordovaLocalNotification, $state, $ionicHistory){
 
         $scope.$on('$ionicView.beforeEnter', function(){
             var prepareData = function(trip){
@@ -392,7 +457,6 @@ angular.module('starter.controllers', [])
 
             var autoRefresh = function() {
                 if(Date.now() - $scope.time > 30000) {
-                    console.log("Refreshed!");
                     $state.go($state.current, {}, {reload: true});
                 } else {
                     $scope.timeout = setTimeout(autoRefresh, 30000);
@@ -413,6 +477,7 @@ angular.module('starter.controllers', [])
                     Localstorage.setObject('ongoing',null);
                     $scope.trip = Localstorage.getObject('ongoing');
                     $scope.isongoing = false;
+                    $ionicHistory.goBack();
                     $cordovaLocalNotification.cancelAll().then(function(){
                         console.log("All notifications are cancelled.");
                     });

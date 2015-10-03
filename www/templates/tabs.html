@@ -5,13 +5,8 @@ navigation history that also transitions its views in and out.
 -->
 <ion-tabs class="tabs-icon-top tabs-color-active-positive">
 
-
-  <ion-tab title="Ongoing trip" icon-off="ion-android-bus" icon-on="ion-android-bus positive" href="#/tab/currenttrip">
-    <ion-nav-view name="tab-currenttrip"></ion-nav-view>
-  </ion-tab>
-
   <!-- Mytrips Tab -->
-  <ion-tab title="My trips" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/mytrips">
+  <ion-tab title="Favourite trips" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/mytrips">
     <ion-nav-view name="tab-mytrips"></ion-nav-view>
   </ion-tab>
 
@@ -21,3 +16,28 @@ navigation history that also transitions its views in and out.
   </ion-tab>
 
 </ion-tabs>
+
+<ion-footer-bar ng-click="gotoCurrentTrip();" class="bar bar-subfooter bar-stable" ng-if="isongoing"
+                style="margin-bottom:4px;padding:0;">
+  <div class="row row-no-padding">
+    <div class="col" style="max-width:40px;">
+      <div class="row row-no-padding">
+        <div style="font-size:20px;padding: 10px 0px 10px 5px;">{{progress}}</div>
+        <div style="font-size:10px;padding: 5px 0px 0px 0px;">%</div>
+      </div>
+    </div>
+    <div class="col text-right">
+        <div>{{trip.LegList.Leg[0].Origin.time}}</div>
+        <div>{{trip.LegList.Leg[0].Origin.name}}</div>
+    </div>
+      <div style="line-height:40px;padding: 0 10px;">--</div>
+    <div class="col">
+      <div>{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time}}</div>
+      <div>{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}</div>
+    </div>
+    <div class="col text-center" style="max-width:40px;">
+      <i class="icon ion-chevron-right" style="font-size:16px;line-height:40px;"></i>
+    </div>
+  </div>
+  <progress max="100" value="{{progress}}"></progress>
+</ion-footer-bar>

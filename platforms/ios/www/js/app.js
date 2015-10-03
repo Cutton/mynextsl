@@ -63,7 +63,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     .state('tab', {
     url: "/tab",
     abstract: true,
-    templateUrl: "templates/tabs.html"
+    templateUrl: "templates/tabs.html",
+    controller: "FooterCtrl"
   })
 
   // Each tab has its own nav history stack:
@@ -83,6 +84,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           'tab-mytrips': {
             templateUrl: 'templates/tab-tripinfo.html',
             controller: 'TripInfoCtrl'
+          }
+        }
+      })
+      .state('tab.mytrips-currenttrip',{
+        url: '/mytrips/currenttrip',
+        views: {
+          'tab-mytrips': {
+            templateUrl: 'templates/tab-currenttrip.html',
+            controller: 'CurrentTripCtrl'
           }
         }
       })
@@ -114,11 +124,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           }
         }
       })
-
-  .state('tab.currenttrip',{
-        url: '/currenttrip',
+      .state('tab.planner-currenttrip',{
+        url: '/planner/currenttrip',
         views: {
-          'tab-currenttrip': {
+          'tab-planner': {
             templateUrl: 'templates/tab-currenttrip.html',
             controller: 'CurrentTripCtrl'
           }

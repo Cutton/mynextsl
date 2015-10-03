@@ -1,4 +1,4 @@
-<ion-view view-title="My Trips">
+<ion-view view-title="Favourite Trips">
   <ion-content class="positive-bg">
     <ion-refresher
             pulling-text="Pull to refresh..."
@@ -21,8 +21,8 @@
             </div>
             <div class="col col-20 fullfillgrid">
               <div class="fullfillComponent text-center" ng-show="!isRoutesShown(trip)">
-                <div style="font-size:43px;line-height: 43px;">{{trip.routes[0].Lefttime}}</div>
-                <p style="font-size:10px;color:white;">min later</p>
+                <div style="font-size:36px;line-height: 36px;">{{trip.routes[0].Lefttime}}</div>
+                <div style="font-size:10px;line-height: 14px;">min later</div>
               </div>
             </div>
             <div class="col col-center">
@@ -42,7 +42,7 @@
                   <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" style="padding-left: 7px;">
                 <div class="col">
                     <span ng-repeat="leg in route.LegList.Leg">
                         <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
@@ -63,8 +63,8 @@
             </div>
             <div class="col-20 col fullfillgrid">
               <div class="fullfillComponent text-center">
-                <div style="font-size:43px;line-height: 43px;">{{route.Lefttime}}</div>
-                <p style="font-size:10px;color:white;">min later</p>
+                <div style="font-size:36px;line-height: 36px;">{{route.Lefttime}}</div>
+                <div style="font-size:10px;line-height: 14px;">min later</div>
               </div>
             </div>
             <div class="col col-center">

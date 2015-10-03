@@ -1,8 +1,9 @@
 <ion-view view-title="Trip Detailed Info">
     <ion-nav-title>
-        <p>
+        <div>
             {{trip.LegList.Leg[0].Origin.name +" -> "+ trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}
-        </p>
+        </div>
+
     </ion-nav-title>
     <ion-content class="has-header">
         <div class="list list-borderless">

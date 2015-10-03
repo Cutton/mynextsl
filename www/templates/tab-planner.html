@@ -6,13 +6,17 @@
                     <div class="row">
                         <div class="col col-20">From</div>
                         <a class="col" ng-click="gotoStation('From');">
-                            <div class="item-input-wrapper dark" >{{fromStation.Name}}</div>
+                            <div class="light-bg dark" >
+                                <div style="padding: 0 5px;">{{fromStation.Name}}</div>
+                            </div>
                         </a>
                     </div>
                     <div class="row">
                         <div class="col col-20">To</div>
                         <div class="col" ng-click="gotoStation('To');">
-                            <div class="item-input-wrapper dark" >{{toStation.Name}}</div>
+                            <div class="light-bg dark" >
+                                <div style="padding: 0 5px;">{{toStation.Name}}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -44,15 +48,15 @@
             </div>
         </div>
     </div>
-    <ion-content class="has-subheader-custom">
+    <ion-content class="has-subheader-custom positive-bg">
         <div class="list">
-            <a href="#/tab/planner/trip/{{$index}}" class="item row-no-padding"
+            <a href="#/tab/planner/trip/{{$index}}" class="item item-positive item-borderless active row-no-padding"
                ng-repeat="route in routes" ng-click="selectTrip(route);">
                 <div class="row row-no-padding">
                     <div class="col-20 col fullfillgrid">
                         <div class="fullfillComponent text-center">
-                            <div style="font-size:43px;line-height: 43px;">{{route.Lefttime}}</div>
-                            <p style="font-size:10px;">min later</p>
+                            <div style="font-size:36px;line-height: 36px;">{{route.Lefttime}}</div>
+                            <div style="font-size:10px;line-height: 14px;">min later</div>
                         </div>
                     </div>
                     <div class="col-75 col">
@@ -64,7 +68,7 @@
                                 <i class="icon ion-ios-clock">&nbsp;{{route.dur + " min"}}</i>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="padding-left: 7px;">
                             <div class="col">
                                 <span
                                      ng-repeat="leg in route.LegList.Leg">
@@ -85,7 +89,7 @@
                         </div>
                     </div>
                     <div class="col col-center">
-                        <i class="icon ion-chevron-right" style="font-size:24px;"></i>
+                        <i class="icon ion-chevron-right" style="font-size:16px;"></i>
                     </div>
                 </div>
             </a>
