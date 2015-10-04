@@ -50,6 +50,8 @@
 		02C502AE2D9342A4A04A517B /* APPLocalNotificationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94915981349E4417AD03BBC7 /* APPLocalNotificationOptions.m */; };
 		00505ACB5E79424AA457C284 /* UIApplication+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EF7028539646819462A887 /* UIApplication+APPLocalNotification.m */; };
 		C1B0CD4A06D0489D80896327 /* UILocalNotification+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE7913856F84D2091DC6815 /* UILocalNotification+APPLocalNotification.m */; };
+		4BFB238EDC324D27BDF8429E /* DatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EFFFE7929984788A3DD8B16 /* DatePicker.m */; };
+		5355086F0C114889BB9846DE /* DatePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0369A17E2BDE40A8A2C1CFD4 /* DatePicker.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,9 @@
 		5BCDF9D46A5B4ACE81CDC870 /* APPLocalNotificationOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPLocalNotificationOptions.h"; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		08B5C0A8BB9845B5951D1CD1 /* UIApplication+APPLocalNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIApplication+APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		CE4BEF82F9B846FD9000C10C /* UILocalNotification+APPLocalNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UILocalNotification+APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		6EFFFE7929984788A3DD8B16 /* DatePicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "DatePicker.m"; path = "cordova-plugin-datepicker/DatePicker.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		9C6B574D23454C89A69E9581 /* DatePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DatePicker.h"; path = "cordova-plugin-datepicker/DatePicker.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		0369A17E2BDE40A8A2C1CFD4 /* DatePicker.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "DatePicker.xib"; path = "DatePicker.xib"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +212,7 @@
 				308D052D1370CCF300D202BF /* icons */,
 				308D05311370CCF300D202BF /* splash */,
 				8D1107310486CEB800E47090 /* myapp-Info.plist */,
+				0369A17E2BDE40A8A2C1CFD4 /* DatePicker.xib */,
 			);
 			name = Resources;
 			path = myapp/Resources;
@@ -255,6 +261,8 @@
 				5BCDF9D46A5B4ACE81CDC870 /* APPLocalNotificationOptions.h */,
 				08B5C0A8BB9845B5951D1CD1 /* UIApplication+APPLocalNotification.h */,
 				CE4BEF82F9B846FD9000C10C /* UILocalNotification+APPLocalNotification.h */,
+				6EFFFE7929984788A3DD8B16 /* DatePicker.m */,
+				9C6B574D23454C89A69E9581 /* DatePicker.h */,
 			);
 			name = Plugins;
 			path = myapp/Plugins;
@@ -413,6 +421,7 @@
 				7E7966E11810823500FA85AD /* icon-50@2x.png in Resources */,
 				7E7966E51810823500FA85AD /* icon-76@2x.png in Resources */,
 				30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */,
+				5355086F0C114889BB9846DE /* DatePicker.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,6 +464,7 @@
 				02C502AE2D9342A4A04A517B /* APPLocalNotificationOptions.m in Sources */,
 				00505ACB5E79424AA457C284 /* UIApplication+APPLocalNotification.m in Sources */,
 				C1B0CD4A06D0489D80896327 /* UILocalNotification+APPLocalNotification.m in Sources */,
+				4BFB238EDC324D27BDF8429E /* DatePicker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

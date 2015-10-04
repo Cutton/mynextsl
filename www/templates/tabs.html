@@ -6,7 +6,7 @@ navigation history that also transitions its views in and out.
 <ion-tabs class="tabs-icon-top tabs-color-active-positive">
 
   <!-- Mytrips Tab -->
-  <ion-tab title="Favourite trips" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/mytrips">
+  <ion-tab title="Favourite trips" icon-off="ion-android-star" icon-on="ion-android-star" href="#/tab/mytrips">
     <ion-nav-view name="tab-mytrips"></ion-nav-view>
   </ion-tab>
 
@@ -17,27 +17,36 @@ navigation history that also transitions its views in and out.
 
 </ion-tabs>
 
-<ion-footer-bar ng-click="gotoCurrentTrip();" class="bar bar-subfooter bar-stable" ng-if="isongoing"
+<ion-footer-bar class="bar bar-subfooter bar-stable footer-animate" ng-show="isongoing"
                 style="margin-bottom:4px;padding:0;">
   <div class="row row-no-padding">
     <div class="col" style="max-width:40px;">
-      <div class="row row-no-padding">
-        <div style="font-size:20px;padding: 10px 0px 10px 5px;" ng-if="progress!=100">{{progress}}</div>
-        <div style="font-size:15px;padding: 10px 0px 10px 0px;" ng-if="progress==100">{{progress}}</div>
+      <div ng-if="progress != 100" class="row row-no-padding">
+        <div style="font-size:20px;padding: 10px 0px 10px 5px;">{{progress}}</div>
         <div style="font-size:10px;padding: 5px 0px 0px 0px;">%</div>
       </div>
+      <div ng-if="progress == 100">
+        <div style="font-size:20px;padding: 10px 0px 10px 5px;">
+          <a class="icon ion-checkmark-circled balanced" ng-click="finishTrip()"></a>
+        </div>
+      </div>
     </div>
-    <div class="col text-right">
+    <div class="col text-right" ng-click="gotoCurrentTrip();">
         <div>{{trip.LegList.Leg[0].Origin.time}}</div>
         <div class="no-text-wrap">{{trip.LegList.Leg[0].Origin.name}}</div>
     </div>
-      <div style="line-height:40px;padding: 0 10px;">--</div>
-    <div class="col">
+    <div style="line-height:40px;padding: 0 10px;" ng-click="gotoCurrentTrip();">--</div>
+    <div class="col" ng-click="gotoCurrentTrip();">
       <div>{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time}}</div>
       <div class="no-text-wrap">{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}</div>
     </div>
-    <div class="col text-center" style="max-width:40px;">
+    <div class="col text-center" ng-if="inOnGoingPage != true" ng-click="gotoCurrentTrip();" style="max-width:40px;">
       <i class="icon ion-chevron-right" style="font-size:16px;line-height:40px;"></i>
+    </div>
+    <div class="col text-center" ng-if="inOnGoingPage == true" ng-click="finishTrip()" style="max-width:40px;">
+      <div style="font-size:20px;padding: 10px 0px 10px 5px;">
+        <a class="icon ion-checkmark-circled balanced"></a>
+      </div>
     </div>
   </div>
   <progress max="100" value="{{progress}}"></progress>

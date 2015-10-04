@@ -1,0 +1,33 @@
+<ion-popover-view style="height:150px;width:150px;">
+    <ion-content>
+        <div class="list">
+            <div class="item item-borderless row row-no-padding text-center" ng-click="setSearchMode('Leave now')">
+                <div class="col col-33 col-center text-center">
+                    <i class="icon positive"
+                       ng-class="searchMode == 'Leave now'?'ion-ios-circle-filled':'ion-ios-circle-outline'"></i>
+                </div>
+                <div class="col text-left">
+                    <button class="button button-clear button-dark">Leave now</button>
+                </div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center" ng-click="setSearchMode('Leave at')">
+                <div class="col col-33 col-center text-center">
+                    <i class="icon positive"
+                       ng-class="searchMode == 'Leave at'?'ion-ios-circle-filled':'ion-ios-circle-outline'"></i>
+                </div>
+                <div class="col text-left">
+                    <button class="button button-clear button-dark">Leave at</button>
+                </div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center" ng-click="setSearchMode('Arrive at')">
+                <div class="col col-33 col-center text-center">
+                    <i class="icon positive"
+                       ng-class="searchMode == 'Arrive at'?'ion-ios-circle-filled':'ion-ios-circle-outline'"></i>
+                </div>
+                <div class="col text-left">
+                    <button class="button button-clear button-dark">Arrive at</button>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-popover-view>

@@ -108,15 +108,28 @@
 
 .list .item.item-accordion {
     padding: 0;
-    transition: 0.02s all linear;
+    transition: 0.05s all linear;
 }
 .list .item.item-accordion.ng-hide {
     line-height: 0px;
+    height: 0;
 }
 .list .item.item-accordion.ng-hide-add,
 .list .item.item-accordion.ng-hide-remove {
     display: block !important;
 }
+
+.footer-animate {
+    transition: 0.2s all linear;
+}
+.footer-animate.ng-hide {
+    opacity: 0;
+}
+.footer-animate.ng-hide-add,
+.footer-animate.ng-hide-remove {
+    display: block !important;
+}
+
 
 .bar { background-image: none !important; }
 
@@ -143,4 +156,9 @@ progress[value]::-webkit-progress-value {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.item .item-content {
+    background-color: transparent !important;
+    padding: 0;
 }

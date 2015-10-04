@@ -1,12 +1,4 @@
-<ion-view>
-    <ion-nav-title>
-        <div ng-if="isongoing">
-            {{trip.LegList.Leg[0].Origin.name +" -> "+ trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}
-        </div>
-        <div ng-if="!isongoing">
-            Ongoing trip
-        </div>
-    </ion-nav-title>
+<ion-view view-title="">
     <ion-content class="has-footer">
         <div ng-if="!isongoing">There is no trip!</div>
         <ion-list ng-if="isongoing" class="list-borderless">
@@ -115,9 +107,4 @@
             </ion-item>
         </ion-list>
     </ion-content>
-    <ion-footer-bar style="padding: 0;margin-bottom:42px;" ng-if="isongoing">
-        <div class="button-bar">
-            <button class="button button-balanced" ng-click="finish()" >Finish!</button>
-        </div>
-    </ion-footer-bar>
 </ion-view>

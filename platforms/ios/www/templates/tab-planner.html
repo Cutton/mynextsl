@@ -32,16 +32,13 @@
                     </button>
                 </div>
                 <div class="col text-center">
-                    <!--
-                    <select class="button button-clear button-large">
-                        <option selected>Leave now</option>
-                        <option>Leave at</option>
-                        <option>Arrive at</option>
-                    </select>
-                    -->
+                    <a class="button button-clear" ng-click="timeMode.show($event);">
+                        {{searchMode +" "}}{{searchMode == 'Leave now'? "":searchTime|date:'EEE H:mm'}}
+                    </a>
+                    <i class="icon ion-chevron-down" style="font-size:12px;line-height:34px;"></i>
                 </div>
                 <div class="col col-20 text-center">
-                    <button class="button button-clear" ng-click="searchRoutes()">
+                    <button class="button button-light" ng-click="searchRoutes()">
                         Search
                     </button>
                 </div>
@@ -55,7 +52,10 @@
                 <div class="row row-no-padding">
                     <div class="col-20 col fullfillgrid">
                         <div class="fullfillComponent text-center">
-                            <div style="font-size:36px;line-height: 36px;">{{route.Lefttime}}</div>
+                            <div style="line-height: 36px;"
+                                 ng-style="{'font-size': route.Lefttime>100?'28px':'36px'}">
+                                {{route.Lefttime>100?"99+":route.Lefttime}}
+                            </div>
                             <div style="font-size:10px;line-height: 14px;">min later</div>
                         </div>
                     </div>

@@ -1,37 +1,43 @@
 <ion-view view-title="Favourite Trips">
-  <ion-content class="positive-bg">
+  <ion-nav-buttons side="right">
+    <button class="button button-icon icon ion-navicon" ng-click="toggleReorder()"></button>
+  </ion-nav-buttons>
+  <ion-content class="positive-bg" ng-class="isongoing?'has-footer':''">
     <ion-refresher
             pulling-text="Pull to refresh..."
             on-refresh="doRefresh()">
     </ion-refresher>
-    <div class="list">
-      <div ng-repeat="trip in trips">
-        <div class="item item-positive row-no-padding item-borderless" ng-class="{active: isRoutesShown(trip)}"
-             ng-click="toggleRoutes(trip)" >
-          <div class="row row-no-padding">
-            <div class="col col-75">
-              <div class="row">
-                <i class="icon ion-location balanced" style="font-size: 28px;"></i>
-                <div class="col">{{trip.ResOrigin.Name}}</div>
-              </div>
-              <div class="row">
-                <i class="icon ion-location assertive" style="font-size: 28px;"></i>
-                <div class="col">{{trip.ResDestination.Name}}</div>
-              </div>
+    <ion-list class="list" can-swipe="listCanSwipe" show-reorder="shouldShowReorder">
+      <ion-item ng-repeat="trip in trips" class="item item-positive row-no-padding item-borderless"
+                ng-class="{active: isRoutesShown(trip)}" ng-click="toggleRoutes(trip)" >
+        <div class="row row-no-padding">
+          <div class="col col-75">
+            <div class="row">
+              <i class="icon ion-location balanced" style="font-size: 28px;"></i>
+              <div class="col">{{trip.ResOrigin.Name}}</div>
             </div>
-            <div class="col col-20 fullfillgrid">
-              <div class="fullfillComponent text-center" ng-show="!isRoutesShown(trip)">
-                <div style="font-size:36px;line-height: 36px;">{{trip.routes[0].Lefttime}}</div>
-                <div style="font-size:10px;line-height: 14px;">min later</div>
-              </div>
-            </div>
-            <div class="col col-center">
-              <i class="icon" ng-class="isRoutesShown(trip)?'ion-android-remove' : 'ion-android-add'" style="font-size:24px;"></i>
+            <div class="row">
+              <i class="icon ion-location assertive" style="font-size: 28px;"></i>
+              <div class="col">{{trip.ResDestination.Name}}</div>
             </div>
           </div>
+          <div class="col col-20 fullfillgrid">
+            <div class="fullfillComponent text-center" ng-show="!isRoutesShown(trip)">
+              <div style="font-size:36px;line-height: 36px;">{{trip.routes[0].Lefttime}}</div>
+              <div style="font-size:10px;line-height: 14px;">min later</div>
+            </div>
+          </div>
+          <div class="col col-center">
+            <i class="icon" ng-class="isRoutesShown(trip)?'ion-android-remove' : 'ion-android-add'"
+               style="font-size:24px;"></i>
+          </div>
         </div>
-        <div ng-click="selectTrip(route);" ng-show="isRoutesShown(trip)"
-             class="item item-accordion item-positive item-borderless active" ng-repeat="route in trip.routes">
+        <ion-option-button class="button-assertive" ng-click="deleteFavourite($index)">Delete</ion-option-button>
+        <ion-reorder-button style="color:white;margin-left:10px;" class="ion-navicon"
+                            on-reorder="reorderTrip(trip, $fromIndex, $toIndex)">
+        </ion-reorder-button>
+        <ion-item ng-click="selectTrip(route);" ng-show="isRoutesShown(trip)"
+                  class="item item-accordion item-positive item-borderless active" ng-repeat="route in trip.routes">
           <div class="row row-no-padding">
             <div class="col-75 col">
               <div class="row">
@@ -44,20 +50,20 @@
               </div>
               <div class="row" style="padding-left: 7px;">
                 <div class="col">
-                    <span ng-repeat="leg in route.LegList.Leg">
-                        <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
-                          {{leg.line}}
-                        </i>
-                        <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
-                          {{leg.line}}
-                        </i>
-                        <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
-                          {{leg.dist}}
-                        </i>
-                        <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
-                          {{leg.line}}
-                        </i>
-                    </span>
+                  <span ng-repeat="leg in route.LegList.Leg">
+                      <i ng-if="leg.type == 'METRO'" class="icon ion-android-subway">
+                        {{leg.line}}
+                      </i>
+                      <i ng-if="leg.type == 'BUS'" class="icon ion-android-bus">
+                        {{leg.line}}
+                      </i>
+                      <i ng-if="leg.type == 'WALK' && leg.hide == true" class="icon ion-android-walk">
+                        {{leg.dist}}
+                      </i>
+                      <i ng-if="leg.type == 'TRAIN'" class="icon ion-android-train">
+                        {{leg.line}}
+                      </i>
+                  </span>
                 </div>
               </div>
             </div>
@@ -71,9 +77,8 @@
               <i class="icon ion-chevron-right" style="font-size:16px;"></i>
             </div>
           </div>
-        </div>
-      </div>
-
-    </div>
+        </ion-item>
+      </ion-item>
+    </ion-list>
   </ion-content>
 </ion-view>

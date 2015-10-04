@@ -1,8 +1,6 @@
 angular.module('starter.services', [])
 
     .factory('Stations', function ($http, $q) {
-
-
         /*
         * API : SL Platsuppslag (https://www.trafiklab.se/api/sl-platsuppslag/sl-platsuppslag)
         *
@@ -45,8 +43,6 @@ angular.module('starter.services', [])
                 });
 
         }
-
-
         /*
          * API : SL Realtidsinformation 3
          *       (https://www.trafiklab.se/api/sl-realtidsinformation-3/sl-realtidsinformation-3)
@@ -162,7 +158,6 @@ angular.module('starter.services', [])
          *                               }
          *          }
          * */
-
         var getLocationInfoHttp = function(slStation){
             return $http.get("https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json",
                 {
@@ -205,9 +200,7 @@ angular.module('starter.services', [])
 
     })
 
-    .factory('Planner', function ($http, $q, Stations, Localstorage) {
-
-
+    .factory('Planner', function ($http, $q, Stations, Localstorage, $filter) {
         /*
          * API : SL Reseplanerare 2
          *      (https://www.trafiklab.se/api/sl-reseplanerare-2/dokumentation-sl-reseplanerare-2)
@@ -223,8 +216,7 @@ angular.module('starter.services', [])
          *
          *
          * */
-
-        var searchRountesHttp = function (fromId, toId) {
+        var searchRountesHttp = function (fromId, toId, time, searchMode) {
             var currentDate = new Date();
             return $http.get("http://api.sl.se/api2/TravelplannerV2/trip.json",
                 {
@@ -232,7 +224,9 @@ angular.module('starter.services', [])
                         "key": "9d7df7c15c9c4275bc1c821f093a880c",
                         "originId": fromId,
                         "destid": toId,
-                        "Time": currentDate.getHours()+":"+currentDate.getMinutes()
+                        "date": $filter('date')(time, 'yyyy-MM-dd'),
+                        "time": $filter('date')(time, 'HH:mm'),
+                        "searchForArrival": searchMode == undefined?0:1
                     }
                 })
                 .success(function (data) {
@@ -242,15 +236,13 @@ angular.module('starter.services', [])
                     console.log("Fail to get trip data!");
                 });
         }
-
-        var searchRountes = function (fromId, toId) {
+        var searchRountes = function (fromId, toId, time, searchMode) {
             return $q.all([
-                searchRountesHttp(fromId, toId)
+                searchRountesHttp(fromId, toId, time, searchMode)
             ]).then(function(results){
                 return results[0].data.TripList.Trip;
             });
         }
-
 
         var getTripDetailsHttp = function (tripref) {
             return $http.get("http://api.sl.se/api2/TravelplannerV2/journeydetail.json?"+tripref,
@@ -260,7 +252,6 @@ angular.module('starter.services', [])
                     }
                 })
         }
-
         var getTripDetails = function (tripref) {
             return $q.all([
                 getTripDetailsHttp(tripref)
@@ -479,6 +470,28 @@ angular.module('starter.services', [])
         };
 
     })
+
+    .factory('Utility', ['$window', function ($window) {
+
+        /*
+        * timeStr format : 2015-10-04T12:34 (no Timezong str)
+        * */
+        var getLeftTimeAsMintues = function(timeStr){
+            var now = new Date();
+            var targetTime = new Date(timeStr);
+            //Add time zone, since iOS doesn't support "+0200"
+            targetTime = new Date(targetTime.getTime()-120*60000);
+            var leftMinutes = Math.round((targetTime.getTime()-now.getTime())/60000);
+            if(leftMinutes < 0){
+                leftMinutes = 0;
+            }
+            return leftMinutes;
+        }
+
+        return {
+            getLeftTimeAsMintues: getLeftTimeAsMintues
+        }
+    }])
 
     .factory('Localstorage', ['$window', function ($window) {
         return {
