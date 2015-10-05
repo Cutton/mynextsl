@@ -1,9 +1,4 @@
 <ion-view>
-    <ion-nav-title>
-        <div>
-            {{trip.LegList.Leg[0].Origin.name +" -> "+ trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}
-        </div>
-    </ion-nav-title>
     <ion-content class="has-header">
         <div class="list list-borderless">
             <div class="item list list-borderless row-no-padding" ng-repeat="leg in trip.LegList.Leg">
@@ -85,9 +80,13 @@
             </div>
         </div>
     </ion-content>
-    <ion-footer-bar style="padding: 0;">
+    <ion-footer-bar style="padding: 0;" ng-style="{'margin-bottom': isongoing?'44px':'0px'}">
         <div class="button-bar">
-            <button class="button button-assertive" ng-if="!isongoing" ng-click="gotrip(trip)">Go!</button>
+            <button class="button button-assertive" ng-click="gotrip(trip)">Go</button>
+            <button class="button button-balanced" ng-if="!hasBeenNotified"
+                    ng-click="goAndSetNoficiation($event)">Go & Notify</button>
+            <button class="button button-calm" ng-if="!hasBeenNotified"
+                    ng-click="setNoficiation($event)">Notify</button>
         </div>
     </ion-footer-bar>
 </ion-view>

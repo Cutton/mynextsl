@@ -114,88 +114,9 @@ angular.module('starter.services', [])
                 });
         }
 
-        /*
-         * API : Resrobot StationInZone (https://www.trafiklab.se/api/resrobot-sok-resa/stationsinzone)
-         *
-         * Params: SL Station Object
-         *          {
-         *              "Name" : "Kungshamra (Solna)",
-         *              "SiteId": "3433",
-         *              "Type": "Station",
-         *              "X": "18027354",
-         *              "Y": "59381940"
-         *          }
-         *
-         * Return: JSON object example
-         *
-         *          {
-         *              "Name" : "Kungshamra (Solna)",
-         *              "SiteId": "3433",
-         *              "Type": "Station",
-         *              "X": "18027354",
-         *              "Y": "59381940"
-         *              "ResrobotInfo": {
-         *                                   "@id": "7445577",
-         *                                    "@x": "18.036733",
-         *                                    "@y": "59.381854",
-         *                                    "name": "Bergshamra centrum",
-         *                                    "municipality": {
-         *                                                       "@id": "84",
-         *                                                       "@county_id": "1",
-         *                                                       "#text": "Solna"
-         *                                    },
-         *                                    "transportlist": {
-         *                                                        "transport": {
-         *                                                               "@type": "BLT",
-         *                                                               "@displaytype": "B"
-         *                                                        }
-         *                                    },
-         *                                    "producerlist": {
-         *                                                    "producer": {
-         *                                                       "@id": "275"
-         *                                                    }
-         *                                    }
-         *                               }
-         *          }
-         * */
-        var getLocationInfoHttp = function(slStation){
-            return $http.get("https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json",
-                {
-                    params: {
-                        "key": "eGASZLdsym9cEXpHIU8xmkvtjTasGy3t",
-                        "apiVersion": "2.1",
-                        "radius": "100",
-                        "coordSys": "WGS84",
-                        /*Format 18036733 as 18.036733*/
-                        "centerX": slStation.X.substr(0, 2) + "." + slStation.X.substr(2),
-                        "centerY": slStation.Y.substr(0, 2) + "." + slStation.Y.substr(2)
-                    }
-                })
-        }
-
-        var getLocationInfo = function(slStation){
-            return $q.all([
-                getLocationInfoHttp(slStation)
-            ]).then(
-                function(results) {
-                    console.log(results);
-                    if(angular.isArray(results[0].data.stationsinzoneresult.location)) {
-                        /*Find more than one location, select the first one*/
-                        slStation.ResrobotInfo = results[0].data.stationsinzoneresult.location[0];
-                    } else {
-                        /*Only one location matched*/
-                        slStation.ResrobotInfo = results[0].data.stationsinzoneresult.location;
-                    }
-                    return slStation;
-                }
-            );
-
-        }
-
         return {
             findStations: findStations,
-            getRealTimeInfo: getRealTimeInfo,
-            getLocationInfo: getLocationInfo
+            getRealTimeInfo: getRealTimeInfo
         };
 
     })
@@ -471,7 +392,82 @@ angular.module('starter.services', [])
 
     })
 
-    .factory('Utility', ['$window', function ($window) {
+    .factory('TripNofication', function ($http, Localstorage, $cordovaLocalNotification) {
+        var addNotification = function(trip){
+            var triptime = new Date(trip.LegList.Leg[0].Origin.date+"T"+trip.LegList.Leg[0].Origin.time);
+            triptime = new Date(triptime.getTime()-120*60000);
+            var alerttime = new Date(triptime - trip.notifyTime*60000);
+            var startTimeStr = trip.LegList.Leg[0].Origin.time;
+            var endTimeStr = trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time;
+            var notification = {
+                id: parseInt(trip.LegList.Leg[0].Origin.id)
+                +parseInt(startTimeStr.substr(0,2)+startTimeStr.substr(3,2))
+                +parseInt(endTimeStr.substr(0,2)+endTimeStr.substr(3,2)),
+                text: 'The trip from '+trip.LegList.Leg[0].Origin.name+' to '
+                +trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name
+                +' will start '+trip.notifyTime+' mintues later, at '+trip.LegList.Leg[0].Origin.time,
+                at: alerttime
+            }
+            $cordovaLocalNotification.schedule(notification).then(function(){
+                console.log("Notfication for trip is added!");
+            });
+        }
+
+        var cancelNotification = function(trip){
+            var startTimeStr = trip.LegList.Leg[0].Origin.time;
+            var endTimeStr = trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time
+            var id = parseInt(trip.LegList.Leg[0].Origin.id)
+                +parseInt(startTimeStr.substr(0,2)+startTimeStr.substr(3,2))
+                +parseInt(endTimeStr.substr(0,2)+endTimeStr.substr(3,2));
+            $cordovaLocalNotification.cancel(id);
+        }
+
+        return {
+            getTrips: function(){
+                if(Localstorage.getObject("notifiedTrips") == null) {
+                    Localstorage.setObject("notifiedTrips",[]);
+                }
+                return Localstorage.getObject("notifiedTrips");
+            },
+            addTrip: function(trip){
+                if(Localstorage.getObject("notifiedTrips") == null) {
+                    Localstorage.setObject("notifiedTrips",[]);
+                }
+                var trips = Localstorage.getObject("notifiedTrips");
+                trips.push(trip);
+                console.log(trips);
+                Localstorage.setObject("notifiedTrips",trips);
+                addNotification(trip);
+            },
+            deleteTrip: function(index){
+                var trips = Localstorage.getObject("notifiedTrips");
+                cancelNotification(trips[index]);
+                trips.splice(index, 1);
+                Localstorage.setObject("notifiedTrips",trips);
+            },
+            isInQueue: function(targetTrip){
+                var result = false;
+                if(Localstorage.getObject("notifiedTrips") == null) {
+                    Localstorage.setObject("notifiedTrips",[]);
+                }
+                var trips = Localstorage.getObject("notifiedTrips");
+                angular.forEach(trips, function(trip){
+                    if(targetTrip.Origin.name == trip.Origin.name
+                    && targetTrip.Origin.time == trip.Origin.time
+                    && targetTrip.Origin.date == trip.Origin.date
+                    && targetTrip.Destination.name == trip.Destination.name
+                    && targetTrip.Destination.time == trip.Destination.time
+                    && targetTrip.Destination.date == trip.Destination.date){
+                        console.log("true!!");
+                        result = true;
+                    }
+                });
+                return result;
+            }
+        }
+    })
+
+    .factory('Utility', function ($window) {
 
         /*
         * timeStr format : 2015-10-04T12:34 (no Timezong str)
@@ -491,7 +487,7 @@ angular.module('starter.services', [])
         return {
             getLeftTimeAsMintues: getLeftTimeAsMintues
         }
-    }])
+    })
 
     .factory('Localstorage', ['$window', function ($window) {
         return {

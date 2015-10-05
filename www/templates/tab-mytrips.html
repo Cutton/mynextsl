@@ -8,7 +8,7 @@
             on-refresh="doRefresh()">
     </ion-refresher>
     <ion-list class="list" can-swipe="listCanSwipe" show-reorder="shouldShowReorder">
-      <ion-item ng-repeat="trip in trips" class="item item-positive row-no-padding item-borderless"
+      <ion-item ng-repeat="trip in trips" class="item item-positive row-no-padding"
                 ng-class="{active: isRoutesShown(trip)}" ng-click="toggleRoutes(trip)" >
         <div class="row row-no-padding">
           <div class="col col-75">

@@ -1,0 +1,19 @@
+<ion-view view-title="Trip Notification">
+    <ion-content>
+        <button class="button button-dark button-full" ng-click="clear()">Clear</button>
+        <ion-list>
+            <ion-item ng-repeat="trip in trips" class="row">
+                <h1>{{trip.notifyTime}}</h1>
+                <div class="col text-right">
+                    <div>{{trip.LegList.Leg[0].Origin.time}}</div>
+                    <div class="no-text-wrap">{{trip.LegList.Leg[0].Origin.name}}</div>
+                </div>
+                <div style="line-height:40px;padding: 0 10px;">--</div>
+                <div class="col">
+                    <div>{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time}}</div>
+                    <div class="no-text-wrap">{{trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.name}}</div>
+                </div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

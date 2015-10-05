@@ -47,11 +47,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   * */
   if (!localStorage.getItem('trips')) {
     console.log('Init trips!');
-    localStorage['trips'] = JSON.stringify("[]");
+    localStorage['trips'] = null;
   }
   if (!localStorage.getItem('ongoing')) {
     console.log('Init ongoing!');
     localStorage['ongoing'] = null;
+  }
+  if (!localStorage.getItem('notifiedTrips')) {
+    console.log('Init notifiedTrips!');
+    localStorage['notifiedTrips'] = null;
   }
 
 
@@ -132,7 +136,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
             controller: 'CurrentTripCtrl'
           }
         }
-      });
+      })
+
+  .state('tab.notifiedTrip', {
+    url: '/notifiedTrip',
+    views: {
+      'tab-notifiedTrip': {
+        templateUrl: 'templates/tab-notifiedTrip.html',
+        controller: 'NotifiedTripCtrl'
+      }
+    }
+  });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/mytrips');

@@ -1,0 +1,54 @@
+<ion-popover-view style="height:190px;width:150px;">
+    <ion-content>
+        <div class="list">
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="goAndNotify && trip.Lefttime > 4" ng-click="addNotficationAndGoTrip(trip,5)">
+                <div class="col"><button class="button button-clear button-positive">5 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="!goAndNotify && trip.Lefttime > 4" ng-click="addNotifiedTrip(trip,5)">
+                <div class="col"><button class="button button-clear button-positive">5 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="trip.Lefttime < 5" ng-click="showAlert(5)">
+                <div class="col"><button class="button button-clear button-stable">5 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="goAndNotify && trip.Lefttime > 9" ng-click="addNotficationAndGoTrip(trip,10)">
+                <div class="col"><button class="button button-clear button-positive">10 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="!goAndNotify && trip.Lefttime > 9" ng-click="addNotifiedTrip(trip,10)">
+                <div class="col"><button class="button button-clear button-positive">10 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="trip.Lefttime < 10" ng-click="showAlert(10)">
+                <div class="col"><button class="button button-clear button-stable">10 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="goAndNotify && trip.Lefttime > 19" ng-click="addNotficationAndGoTrip(trip,20)">
+                <div class="col"><button class="button button-clear button-positive">20 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="!goAndNotify && trip.Lefttime > 19" ng-click="addNotifiedTrip(trip,20)">
+                <div class="col"><button class="button button-clear button-positive">20 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="trip.Lefttime < 20" ng-click="showAlert(20)">
+                <div class="col"><button class="button button-clear button-stable">20 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="goAndNotify && trip.Lefttime > 29" ng-click="addNotficationAndGoTrip(trip,30)">
+                <div class="col"><button class="button button-clear button-positive">30 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="!goAndNotify && trip.Lefttime > 29" ng-click="addNotifiedTrip(trip,30)">
+                <div class="col"><button class="button button-clear button-positive">30 min</button></div>
+            </div>
+            <div class="item item-borderless row row-no-padding text-center"
+                 ng-if="trip.Lefttime < 30" ng-click="showAlert(30)">
+                <div class="col"><button class="button button-clear button-stable">30 min</button></div>
+            </div>
+        </div>
+    </ion-content>
+</ion-popover-view>
