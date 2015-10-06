@@ -230,23 +230,23 @@ angular.module('starter.controllers', [])
     /*
      * Select station controller
      * */
-    .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading, $rootScope) {
+    .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading, $timeout,
+                                         $rootScope) {
         $scope.$on('$ionicView.beforeEnter', function(){
             $rootScope.$broadcast('inState',{state:'selectstation'});
         });
 
         $scope.fromorto = $stateParams.fromorto;
 
-        $scope.search = function (station) {
-            $ionicLoading.show({
-                template: '<ion-spinner icon="lines" class="spinner-light"></ion-spinner>'
-            });
-            Stations.findStations(station.name)
-                .then(function(result) {
-                    $scope.searchResults = result;
-                    $ionicLoading.hide();
-                });
+        $scope.search = function (name) {
+            if(name.length > 2) {
+                Stations.findStations(name)
+                    .then(function (result) {
+                        $scope.searchResults = result;
+                    });
+            }
         }
+
 
         $scope.setStation = function (station) {
             if($scope.fromorto == "From") {

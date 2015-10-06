@@ -1,9 +1,10 @@
 <ion-view>
     <ion-nav-title>
-        <form ng-submit="search(station)">
+        <form ng-submit="search(station.name)">
             <div class="item-input-inset" style="padding: 7px;">
                 <label class="item-input-wrapper">
-                    <input type="text" ng-model="station.name" placeholder="{{fromorto}}" focus-me />
+                    <input type="text" ng-model="station.name" ng-change="search(station.name)"
+                           placeholder="{{fromorto}}" focus-me />
                 </label>
                 <button ng-if="station.name.length" type="button" style="border: 0;min-height:29px;height: 29px;"
                         class="button icon ion-close-circled" ng-click="station.name = ''"></button>
