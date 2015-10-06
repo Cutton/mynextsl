@@ -392,11 +392,12 @@ angular.module('starter.services', [])
 
     })
 
-    .factory('TripNofication', function ($http, Localstorage, $cordovaLocalNotification) {
+    .factory('TripNotification', function ($http, Localstorage, $cordovaLocalNotification) {
         var addNotification = function(trip){
             var triptime = new Date(trip.LegList.Leg[0].Origin.date+"T"+trip.LegList.Leg[0].Origin.time);
             triptime = new Date(triptime.getTime()-120*60000);
             var alerttime = new Date(triptime - trip.notifyTime*60000);
+            trip.alertTime = alerttime;
             var startTimeStr = trip.LegList.Leg[0].Origin.time;
             var endTimeStr = trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time;
             var notification = {
@@ -408,18 +409,29 @@ angular.module('starter.services', [])
                 +' will start '+trip.notifyTime+' mintues later, at '+trip.LegList.Leg[0].Origin.time,
                 at: alerttime
             }
-            $cordovaLocalNotification.schedule(notification).then(function(){
+            if(Localstorage.getObject("notification")){
+                $cordovaLocalNotification.schedule(notification).then(function(){
+                    console.log("Notfication for trip is added!");
+                });
+            } else {
                 console.log("Notfication for trip is added!");
-            });
+            }
+
         }
 
         var cancelNotification = function(trip){
-            var startTimeStr = trip.LegList.Leg[0].Origin.time;
-            var endTimeStr = trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time
-            var id = parseInt(trip.LegList.Leg[0].Origin.id)
+            var startTimeStr = trip.Origin.time;
+            var endTimeStr = trip.Destination.time
+            var id = parseInt(trip.Origin.id)
                 +parseInt(startTimeStr.substr(0,2)+startTimeStr.substr(3,2))
                 +parseInt(endTimeStr.substr(0,2)+endTimeStr.substr(3,2));
-            $cordovaLocalNotification.cancel(id);
+
+            if(Localstorage.getObject("notification")){
+                $cordovaLocalNotification.cancel(id);
+            } else {
+                console.log("Notfication cancelled!");
+            }
+
         }
 
         return {
@@ -433,11 +445,12 @@ angular.module('starter.services', [])
                 if(Localstorage.getObject("notifiedTrips") == null) {
                     Localstorage.setObject("notifiedTrips",[]);
                 }
-                var trips = Localstorage.getObject("notifiedTrips");
-                trips.push(trip);
-                console.log(trips);
-                Localstorage.setObject("notifiedTrips",trips);
                 addNotification(trip);
+                var trips = Localstorage.getObject("notifiedTrips");
+                console.log(trip.alertTime);
+                trips.push(trip);
+                Localstorage.setObject("notifiedTrips",trips);
+
             },
             deleteTrip: function(index){
                 var trips = Localstorage.getObject("notifiedTrips");
@@ -446,7 +459,7 @@ angular.module('starter.services', [])
                 Localstorage.setObject("notifiedTrips",trips);
             },
             isInQueue: function(targetTrip){
-                var result = false;
+                var result = null;
                 if(Localstorage.getObject("notifiedTrips") == null) {
                     Localstorage.setObject("notifiedTrips",[]);
                 }
@@ -458,16 +471,40 @@ angular.module('starter.services', [])
                     && targetTrip.Destination.name == trip.Destination.name
                     && targetTrip.Destination.time == trip.Destination.time
                     && targetTrip.Destination.date == trip.Destination.date){
-                        console.log("true!!");
-                        result = true;
+                        result = trip.alertTime;
                     }
                 });
+                return result;
+            },
+            getTripIndex: function(targetTrip){
+                var result = -1;
+                var trips = Localstorage.getObject("notifiedTrips");
+                angular.forEach(trips, function(trip, key){
+                    if(targetTrip.Origin.name == trip.Origin.name
+                        && targetTrip.Origin.time == trip.Origin.time
+                        && targetTrip.Origin.date == trip.Origin.date
+                        && targetTrip.Destination.name == trip.Destination.name
+                        && targetTrip.Destination.time == trip.Destination.time
+                        && targetTrip.Destination.date == trip.Destination.date){
+                        result = key;
+                    }
+                });
+                return result;
+            },
+            isTriggered: function(trip){
+                var result = false;
+                var now = new Date();
+                var startTime = new Date(trip.Origin.date+"T"+trip.Origin.time);
+                startTime = new Date(startTime.getTime()-120*60000);
+                if((startTime.getTime()-now.getTime())<trip.notifyTime*60000){
+                    result = true;
+                }
                 return result;
             }
         }
     })
 
-    .factory('Utility', function ($window) {
+    .factory('Utility', function () {
 
         /*
         * timeStr format : 2015-10-04T12:34 (no Timezong str)

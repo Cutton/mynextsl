@@ -159,6 +159,9 @@ progress[value]::-webkit-progress-value {
 }
 
 .item .item-content {
-    background-color: transparent !important;
     padding: 0;
+}
+
+.item.active .item-content {
+    background-color: inherit;
 }

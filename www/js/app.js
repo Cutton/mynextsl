@@ -57,8 +57,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     console.log('Init notifiedTrips!');
     localStorage['notifiedTrips'] = null;
   }
-
-
+  //Browser debug code -- turn off notification
+  localStorage['notification'] = true;
 
 
   $stateProvider
@@ -146,7 +146,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         controller: 'NotifiedTripCtrl'
       }
     }
-  });
+  })
+      .state('tab.notification-currenttrip',{
+        url: '/notifiedTrip/currenttrip',
+        views: {
+          'tab-notifiedTrip': {
+            templateUrl: 'templates/tab-currenttrip.html',
+            controller: 'CurrentTripCtrl'
+          }
+        }
+      });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/mytrips');

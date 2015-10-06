@@ -83,10 +83,12 @@
     <ion-footer-bar style="padding: 0;" ng-style="{'margin-bottom': isongoing?'44px':'0px'}">
         <div class="button-bar">
             <button class="button button-assertive" ng-click="gotrip(trip)">Go</button>
-            <button class="button button-balanced" ng-if="!hasBeenNotified"
-                    ng-click="goAndSetNoficiation($event)">Go & Notify</button>
-            <button class="button button-calm" ng-if="!hasBeenNotified"
-                    ng-click="setNoficiation($event)">Notify</button>
+            <button class="button button-dark button-outline" ng-if="notifiedTime != null"
+                    ng-click="deleteNotificationFromTripInfo(trip)">
+                Notified at {{notifiedTime|date:'H:mm'}}
+            </button>
+            <button class="button button-calm" ng-if="notifiedTime == null"
+                    ng-click="setNoficiation($event)">Set a notification</button>
         </div>
     </ion-footer-bar>
 </ion-view>

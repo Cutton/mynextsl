@@ -22,6 +22,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-datepicker/www/ios/DatePicker.js",
+        "id": "cordova-plugin-datepicker.DatePicker",
+        "clobbers": [
+            "datePicker"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-device/www/device.js",
         "id": "cordova-plugin-device.device",
         "clobbers": [
@@ -58,13 +65,6 @@ module.exports = [
             "cordova.plugins.notification.local.core",
             "plugin.notification.local.core"
         ]
-    },
-    {
-        "file": "plugins/cordova-plugin-datepicker/www/ios/DatePicker.js",
-        "id": "cordova-plugin-datepicker.DatePicker",
-        "clobbers": [
-            "datePicker"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -72,12 +72,12 @@ module.exports.metadata =
 {
     "com.ionic.keyboard": "1.0.4",
     "cordova-plugin-console": "1.0.1",
+    "cordova-plugin-datepicker": "0.9.0",
     "cordova-plugin-device": "1.0.1",
     "cordova-plugin-splashscreen": "2.1.0",
     "cordova-plugin-whitelist": "1.0.0",
-    "de.appplant.cordova.plugin.local-notification": "0.8.2-dev",
-    "cordova-plugin-datepicker": "0.9.0",
-    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
+    "de.appplant.cordova.plugin.local-notification": "0.8.2-dev"
 }
 // BOTTOM OF METADATA
 });
