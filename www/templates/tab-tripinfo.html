@@ -85,10 +85,10 @@
             <button class="button button-assertive" ng-click="gotrip(trip)">Go</button>
             <button class="button button-dark button-outline" ng-if="notifiedTime != null"
                     ng-click="deleteNotificationFromTripInfo(trip)">
-                Notified at {{notifiedTime|date:'H:mm'}}
+                Reminder at {{notifiedTime|date:'H:mm'}}
             </button>
             <button class="button button-calm" ng-if="notifiedTime == null"
-                    ng-click="setNoficiation($event)">Set a notification</button>
+                    ng-click="setNoficiation($event)">Set a reminder</button>
         </div>
     </ion-footer-bar>
 </ion-view>

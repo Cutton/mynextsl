@@ -395,7 +395,7 @@ angular.module('starter.services', [])
     .factory('TripNotification', function ($http, Localstorage, $cordovaLocalNotification) {
         var addNotification = function(trip){
             var triptime = new Date(trip.LegList.Leg[0].Origin.date+"T"+trip.LegList.Leg[0].Origin.time);
-            triptime = new Date(triptime.getTime()-120*60000);
+            triptime = new Date(triptime.getTime()-60*60000);
             var alerttime = new Date(triptime - trip.notifyTime*60000);
             trip.alertTime = alerttime;
             var startTimeStr = trip.LegList.Leg[0].Origin.time;
@@ -495,7 +495,7 @@ angular.module('starter.services', [])
                 var result = false;
                 var now = new Date();
                 var startTime = new Date(trip.Origin.date+"T"+trip.Origin.time);
-                startTime = new Date(startTime.getTime()-120*60000);
+                startTime = new Date(startTime.getTime()-60*60000);
                 if((startTime.getTime()-now.getTime())<trip.notifyTime*60000){
                     result = true;
                 }
@@ -513,7 +513,7 @@ angular.module('starter.services', [])
             var now = new Date();
             var targetTime = new Date(timeStr);
             //Add time zone, since iOS doesn't support "+0200"
-            targetTime = new Date(targetTime.getTime()-120*60000);
+            targetTime = new Date(targetTime.getTime()-60*60000);
             var leftMinutes = Math.round((targetTime.getTime()-now.getTime())/60000);
             if(leftMinutes < 0){
                 leftMinutes = 0;

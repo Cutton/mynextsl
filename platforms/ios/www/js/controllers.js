@@ -311,7 +311,7 @@ angular.module('starter.controllers', [])
                 if(leg.type != "WALK"){
                     //Add notfication for origin
                     var triptime = new Date(leg.Origin.date+"T"+leg.Origin.time);
-                    triptime = new Date(triptime.getTime()-120*60000);
+                    triptime = new Date(triptime.getTime()-60*60000);
                     var alerttime = new Date(triptime - 2*60000);
                     var notification = {
                         id: leg.Origin.id+key.toString()+"01",
@@ -321,7 +321,7 @@ angular.module('starter.controllers', [])
                     notificationList.push(notification);
                     //Add notification for destination
                     triptime = new Date(leg.Destination.date+"T"+leg.Destination.time);
-                    triptime = new Date(triptime.getTime()-120*60000);
+                    triptime = new Date(triptime.getTime()-60*60000);
                     alerttime = new Date(triptime - 1*60000);
                     notification = {
                         id: leg.Destination.id+key.toString()+"01",
@@ -467,10 +467,10 @@ angular.module('starter.controllers', [])
         var calculateProgress = function(trip) {
             var progress = 0;
             var start = new Date(trip.LegList.Leg[0].Origin.date+"T"+trip.LegList.Leg[0].Origin.time);
-            start = new Date(start.getTime()-120*60000);
+            start = new Date(start.getTime()-60*60000);
             var end = new Date(trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.date
                 +"T"+trip.LegList.Leg[trip.LegList.Leg.length-1].Destination.time);
-            end = new Date(end.getTime()-120*60000);
+            end = new Date(end.getTime()-60*60000);
             var now = new Date();
             if(now.getTime() < start.getTime()){
                 progress = 0;
@@ -615,7 +615,7 @@ angular.module('starter.controllers', [])
                 var now = new Date();
                 angular.forEach(tripList, function(trip){
                     var triptime = new Date(trip.date+"T"+trip.time);
-                    triptime = new Date(triptime.getTime()-120*60000);
+                    triptime = new Date(triptime.getTime()-60*60000);
                     if(now.getTime() > triptime.getTime()){
                         trip.status = "finished";
                     } else {
