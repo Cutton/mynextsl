@@ -193,8 +193,12 @@ angular.module('starter.controllers', [])
         }
 
         var setSearchTime = function(){
+            var time = new Date();
+            if($scope.searchTime != null) {
+                time = $scope.searchTime;
+            }
             var options = {
-                date: new Date(),
+                date: time,
                 mode: 'datetime',
                 allowOldDates: true,
                 allowFutureDates: true,
@@ -220,7 +224,7 @@ angular.module('starter.controllers', [])
             if(mode != "Leave now") {
                 setSearchTime();
             } else {
-                $scope.searchTime = new Date();
+                $scope.searchTime = null;
             }
 
         }
@@ -231,13 +235,16 @@ angular.module('starter.controllers', [])
      * Select station controller
      * */
     .controller('StationCtrl', function ($scope, $state, $stateParams, Stations, Planner, $ionicLoading, $timeout,
-                                         $rootScope) {
+                                         $rootScope, Localstorage) {
         $scope.$on('$ionicView.beforeEnter', function(){
             $rootScope.$broadcast('inState',{state:'selectstation'});
+            if(Localstorage.getObject("stationHistory") == null){
+                Localstorage.setObject('stationHistory',[]);
+            }
         });
 
         $scope.fromorto = $stateParams.fromorto;
-
+        $scope.searchHistory = Localstorage.getObject("stationHistory");
         $scope.search = function (name) {
             if(name.length > 2) {
                 Stations.findStations(name)
@@ -247,8 +254,37 @@ angular.module('starter.controllers', [])
             }
         }
 
+        var addStationToSearchHistory = function(station){
+            var stationHistory = Localstorage.getObject("stationHistory");
+
+            var indexForStationInHistory = -1;
+            angular.forEach(stationHistory, function(s,key){
+                if(s.SiteId == station.SiteId){
+                    indexForStationInHistory = key;
+                }
+            })
+
+            if(indexForStationInHistory != -1) {
+                //Same record in history
+                if(indexForStationInHistory != 0) {
+                    stationHistory.splice(indexForStationInHistory,1);
+                }
+            }
+            //Put searcher record at first
+            stationHistory.splice(0,0,station);
+
+            //keep last 5 search records
+            var historySize = 5;
+            if(stationHistory.length > historySize) {
+                //trim to 5 recrds
+                stationHistory.splice(5,1);
+            }
+
+            Localstorage.setObject('stationHistory',stationHistory);
+        }
 
         $scope.setStation = function (station) {
+            addStationToSearchHistory(station);
             if($scope.fromorto == "From") {
                 Planner.setFrom(station);
             } else if ($scope.fromorto == "To") {

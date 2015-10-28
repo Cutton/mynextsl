@@ -1,4 +1,4 @@
-<ion-view>
+<ion-view cache-view="false">
     <ion-nav-title>
         <form ng-submit="search(station.name)">
             <div class="item-input-inset" style="padding: 7px;">
@@ -13,6 +13,12 @@
         </form>
     </ion-nav-title>
     <ion-content>
+        <div class="list" ng-if="searchResults == undefined">
+            <div class="item item-divider">
+                Recently 5 searched stops
+            </div>
+            <a class="item" ng-repeat="item in searchHistory" ng-click="setStation(item)">{{item.Name}}</a>
+        </div>
         <div class="list">
             <a class="item" ng-repeat="item in searchResults" ng-click="setStation(item)">{{item.Name}}</a>
         </div>

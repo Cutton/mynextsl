@@ -43,7 +43,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 
 
   /*
-  * Init localStorage with user's favorite trips.
+  * Init localStorage.
   * */
   if (!localStorage.getItem('trips')) {
     console.log('Init trips!');
@@ -56,6 +56,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   if (!localStorage.getItem('notifiedTrips')) {
     console.log('Init notifiedTrips!');
     localStorage['notifiedTrips'] = null;
+  }
+  if (!localStorage.getItem('stationHistory')) {
+    console.log('Init stationHistory!');
+    localStorage['stationHistory'] = null;
   }
   //Browser debug code -- turn off notification
   localStorage['notification'] = true;
