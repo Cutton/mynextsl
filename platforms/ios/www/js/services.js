@@ -38,9 +38,14 @@ angular.module('starter.services', [])
         var findStations = function (stationQuery, maxresult) {
 
             return $q.all([findStationsHttp(stationQuery, maxresult)])
-                .then(function(results){
+                .then(
+                function(results){
                     return results[0].data.ResponseData;
-                });
+                },
+                function(error){
+                    return "error";
+                }
+            );
 
         }
         /*
@@ -156,14 +161,19 @@ angular.module('starter.services', [])
                 .error(function (data) {
                     console.log("Fail to get trip data!");
                 });
-        }
+        };
         var searchRountes = function (fromId, toId, time, searchMode) {
             return $q.all([
                 searchRountesHttp(fromId, toId, time, searchMode)
-            ]).then(function(results){
-                return results[0].data.TripList.Trip;
-            });
-        }
+            ]).then(
+                function(results){
+                    return results[0].data.TripList.Trip;
+                },
+                function(error){
+                    return "error";
+                }
+            );
+        };
 
         var getTripDetailsHttp = function (tripref) {
             return $http.get("http://api.sl.se/api2/TravelplannerV2/journeydetail.json?"+tripref,
@@ -172,14 +182,19 @@ angular.module('starter.services', [])
                         "key": "9d7df7c15c9c4275bc1c821f093a880c"
                     }
                 })
-        }
+        };
         var getTripDetails = function (tripref) {
             return $q.all([
                 getTripDetailsHttp(tripref)
-            ]).then(function(results){
-                return results[0].data.JourneyDetail.Stops.Stop;
-            });
-        }
+            ]).then(
+                function(results){
+                    return results[0].data.JourneyDetail.Stops.Stop;
+                },
+                function(error){
+                    return "error";
+                }
+            );
+        };
 
         var isFavouriteTrip = function(fromStation, toStation) {
             var isInFavourite = -1;

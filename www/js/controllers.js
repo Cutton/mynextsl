@@ -2,7 +2,7 @@ angular.module('starter.controllers', [])
     /*
     * My trips controller
     * */
-    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $rootScope, Utility) {
+    .controller('TripCtrl', function ($scope, Localstorage, Planner,$state,$q, $rootScope, Utility, $ionicPopup) {
         $scope.$on('$ionicView.beforeEnter', function(){
             if(Localstorage.getObject('trips')==null){
                 Localstorage.setObject('trips',[]);
@@ -20,12 +20,22 @@ angular.module('starter.controllers', [])
         $scope.listCanSwipe = true;
         $scope.shouldShowReorder = false;
 
+
+        //Failed to load data alert window
+        $rootScope.httpErrorAlertWindow = function() {
+            var alertPopup = $ionicPopup.alert({
+                title: 'Sorry, fail to load data from SL server. Try it later.'
+            });
+            alertPopup.then(function(res) {
+                //
+            });
+        };
+
         $scope.toggleReorder = function() {
             $scope.shouldShowReorder = !$scope.shouldShowReorder;
-        }
+        };
 
         $scope.reorderTrip = function(trip, fromIndex, toIndex) {
-            console.log(fromIndex+" : "+toIndex);
             $scope.trips.splice(fromIndex, 1);
             $scope.trips.splice(toIndex, 0, trip);
         };
@@ -41,7 +51,7 @@ angular.module('starter.controllers', [])
             });
             Localstorage.setObject("trips",newtrips);
             $scope.trips = Localstorage.getObject("trips");
-        }
+        };
 
         $scope.doRefresh = function(){
             var requestList = [];
@@ -49,37 +59,41 @@ angular.module('starter.controllers', [])
                 requestList.push(Planner.searchRountes(trip.ResOrigin.SiteId,trip.ResDestination.SiteId));
             });
             $q.all(requestList).then(function(results){
-                angular.forEach(results,function(routes,key){
-                    $scope.trips[key].routes = [];
-                    angular.forEach(routes,function(route){
-                        if(!angular.isArray(route.LegList.Leg)) {
-                            route.LegList.Leg = [route.LegList.Leg];
-                        }
-                        route.Origin = route.LegList.Leg[0].Origin;
-                        route.Destination = route.LegList.Leg[route.LegList.Leg.length-1].Destination;
-                        //Calculate left time
-                        var datestring = route.LegList.Leg[0].Origin.date + "T" + route.LegList.Leg[0].Origin.time;
-                        route.Lefttime = Utility.getLeftTimeAsMintues(datestring);
-                        $scope.trips[key].routes.push(route);
+                if(results[0] == "error"){
+                    $rootScope.httpErrorAlertWindow();
+                } else {
+                    angular.forEach(results,function(routes,key){
+                        $scope.trips[key].routes = [];
+                        angular.forEach(routes,function(route){
+                            if(!angular.isArray(route.LegList.Leg)) {
+                                route.LegList.Leg = [route.LegList.Leg];
+                            }
+                            route.Origin = route.LegList.Leg[0].Origin;
+                            route.Destination = route.LegList.Leg[route.LegList.Leg.length-1].Destination;
+                            //Calculate left time
+                            var datestring = route.LegList.Leg[0].Origin.date + "T" + route.LegList.Leg[0].Origin.time;
+                            route.Lefttime = Utility.getLeftTimeAsMintues(datestring);
+                            $scope.trips[key].routes.push(route);
+                        });
                     });
-                });
+                }
                 $scope.$broadcast('scroll.refreshComplete');
             });
-        }
+        };
 
         $scope.selectTrip = function(route){
             Planner.setSelectedTrip(route);
             $state.go('tab.trip-info1',{tripIndex: 0});
-        }
+        };
 
 
         $scope.toggleRoutes = function(trip) {
             trip.show = !trip.show;
-        }
+        };
 
         $scope.isRoutesShown = function(trip) {
             return trip.show;
-        }
+        };
 
         $scope.$on('$ionicView.beforeLeave', function(){
             clearInterval($scope.autoRefresh);
@@ -128,19 +142,27 @@ angular.module('starter.controllers', [])
                 }
                 Planner.searchRountes($scope.fromStation.SiteId, $scope.toStation.SiteId, searchtime)
                     .then(function(result) {
-                        angular.forEach(result, function(trip){
-                            prepareDataForTripObject(trip);
-                        })
-                        $scope.routes = result;
+                        if(result == "error") {
+                            $rootScope.httpErrorAlertWindow();
+                        } else {
+                            angular.forEach(result, function(trip){
+                                prepareDataForTripObject(trip);
+                            })
+                            $scope.routes = result;
+                        }
                         $ionicLoading.hide();
                     });
             } else {
                 Planner.searchRountes($scope.fromStation.SiteId, $scope.toStation.SiteId,
                     $scope.searchTime, $scope.searchMode).then(function(result) {
-                        angular.forEach(result, function(trip){
-                            prepareDataForTripObject(trip);
-                        })
-                        $scope.routes = result;
+                        if(result == "error") {
+                            $rootScope.httpErrorAlertWindow();
+                        } else {
+                            angular.forEach(result, function(trip){
+                                prepareDataForTripObject(trip);
+                            })
+                            $scope.routes = result;
+                        }
                         $ionicLoading.hide();
                     });
             }
@@ -249,7 +271,12 @@ angular.module('starter.controllers', [])
             if(name.length > 2) {
                 Stations.findStations(name)
                     .then(function (result) {
-                        $scope.searchResults = result;
+                        if(result == "error"){
+                            $rootScope.httpErrorAlertWindow();
+                        } else {
+                            $scope.searchResults = result;
+                        }
+
                     });
             }
         }
@@ -324,14 +351,18 @@ angular.module('starter.controllers', [])
                     }
                 });
                 $q.all(requestList).then(function(results){
-                    var i = 0;
-                    angular.forEach($scope.trip.LegList.Leg, function(leg){
-                        if(leg.JourneyDetailRef !== undefined) {
-                            leg.Stops = results[i];
-                            leg.showTripDetail = false;
-                            i++;
-                        }
-                    });
+                    if(results[0] == "error") {
+                        $rootScope.httpErrorAlertWindow();
+                    } else {
+                        var i = 0;
+                        angular.forEach($scope.trip.LegList.Leg, function(leg){
+                            if(leg.JourneyDetailRef !== undefined) {
+                                leg.Stops = results[i];
+                                leg.showTripDetail = false;
+                                i++;
+                            }
+                        });
+                    }
                     $ionicLoading.hide();
                 });
             }
@@ -517,11 +548,11 @@ angular.module('starter.controllers', [])
                 progress = Math.round(progress*100);
             }
             return progress;
-        }
+        };
 
         $scope.updateProgress = function(){
             $rootScope.$broadcast("tripProgress",{progress: calculateProgress($scope.trip)});
-        }
+        };
 
         var stopTrip = function(){
             clearInterval($scope.refreshProgress);
@@ -548,7 +579,7 @@ angular.module('starter.controllers', [])
             } else {
                 $state.go($state.current, {}, {reload: true});
             }
-        }
+        };
 
         $scope.finishTrip = function(){
             var confirmPopup = $ionicPopup.confirm({
@@ -577,7 +608,7 @@ angular.module('starter.controllers', [])
                     TripNotification.deleteTrip(key);
                 }
             });
-            $scope.trips = TripNotification.getTrips();;
+            $scope.trips = TripNotification.getTrips();
         });
 
         $scope.listCanSwipe = true;
@@ -609,7 +640,7 @@ angular.module('starter.controllers', [])
                             dir: leg.dir,
                             traffictype: leg.type,
                             line: leg.line
-                        }
+                        };
                         tripList.push(tripUnit);
                         angular.forEach(leg.Stops, function(stop){
                             if(parseInt(stop.routeIdx) < parseInt(leg.Destination.routeIdx)
@@ -620,7 +651,7 @@ angular.module('starter.controllers', [])
                                     name: stop.name,
                                     time: stop.depTime,
                                     date: stop.depDate
-                                }
+                                };
                                 tripList.push(tripUnit);
                             }
                         });
@@ -630,7 +661,7 @@ angular.module('starter.controllers', [])
                             name: leg.Destination.name,
                             time: leg.Destination.time,
                             date: leg.Destination.date
-                        }
+                        };
                         tripList.push(tripUnit);
                     } else {
                         //Walk
@@ -639,13 +670,13 @@ angular.module('starter.controllers', [])
                             dist: leg.dist,
                             time: leg.Destination.time,
                             date: leg.Destination.date
-                        }
+                        };
                         tripList.push(tripUnit);
                     }
                 });
                 updateStatus(tripList);
                 return tripList;
-            }
+            };
             //Add status to stops. Including finished, todo, ongoing
             var updateStatus = function(tripList){
                 var now = new Date();
@@ -663,7 +694,7 @@ angular.module('starter.controllers', [])
                         }
                     }
                 });
-            }
+            };
 
             $scope.trip = Localstorage.getObject('ongoing');
             if($scope.trip == null) {
